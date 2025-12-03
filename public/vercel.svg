@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="97.234596mm"
+   height="103.40822mm"
+   viewBox="0 0 97.234596 103.40822"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
+   sodipodi:docname="logo.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="4"
+     inkscape:cx="133.625"
+     inkscape:cy="182.875"
+     inkscape:window-width="1920"
+     inkscape:window-height="1051"
+     inkscape:window-x="-9"
+     inkscape:window-y="1044"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2">
+    <filter
+       inkscape:label="Soft Colors"
+       inkscape:menu="Color"
+       inkscape:menu-tooltip="Adds a colorizable edges glow inside objects and pictures"
+       style="color-interpolation-filters:sRGB"
+       id="filter245"
+       x="-0.13333333"
+       y="-0.13333333"
+       width="1.2666667"
+       height="1.2666667">
+      <feColorMatrix
+         type="saturate"
+         values="1"
+         result="result91"
+         id="feColorMatrix225" />
+      <feComposite
+         in2="result91"
+         result="result15"
+         operator="arithmetic"
+         k2="0.4"
+         k1="0.3"
+         k3="0.3"
+         id="feComposite227"
+         k4="0" />
+      <feGaussianBlur
+         in="result15"
+         result="result8"
+         stdDeviation="5"
+         id="feGaussianBlur229" />
+      <feColorMatrix
+         values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 50 0 "
+         id="feColorMatrix231" />
+      <feComposite
+         in2="SourceGraphic"
+         operator="in"
+         result="result13"
+         id="feComposite233" />
+      <feComposite
+         in2="result13"
+         k3="0.3"
+         k1="0.3"
+         k2="0.4"
+         operator="arithmetic"
+         in="result15"
+         result="result6"
+         id="feComposite235"
+         k4="0" />
+      <feFlood
+         flood-color="rgb(128,172,0)"
+         flood-opacity="1"
+         result="result10"
+         id="feFlood237" />
+      <feBlend
+         in2="result10"
+         result="result12"
+         in="result6"
+         mode="darken"
+         id="feBlend239" />
+      <feBlend
+         in2="result6"
+         result="result14"
+         mode="screen"
+         id="feBlend241" />
+      <feComposite
+         in2="SourceGraphic"
+         in="result14"
+         operator="in"
+         id="feComposite243" />
+    </filter>
+  </defs>
+  <g
+     inkscape:label="logo"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-53.574774,-22.637878)">
+    <circle
+       style="fill:#ff0000;fill-opacity:0.956835;fill-rule:evenodd;stroke-width:0.32771;filter:url(#filter245)"
+       id="path233"
+       cx="102.19207"
+       cy="74.341988"
+       r="45"
+       inkscape:label="bola" />
+    <text
+       xml:space="preserve"
+       style="font-size:197.556px;line-height:0.1;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:center;text-anchor:middle;fill:#ff0000;fill-opacity:0.956835;fill-rule:evenodd;stroke-width:0.264583"
+       x="102.19207"
+       y="123.73099"
+       id="text755"
+       inkscape:label="o"
+       transform="translate(1.25e-6)"><tspan
+         sodipodi:role="line"
+         id="tspan753"
+         style="font-size:197.556px;fill:#ff0000;stroke-width:0.264583"
+         x="102.19207"
+         y="123.73099">o</tspan></text>
+    <g
+       id="g678"
+       transform="matrix(1.5077405,0,0,1.5077405,21.249023,-209.15842)"
+       inkscape:label="grupo">
+      <g
+         id="g664"
+         inkscape:label="texto">
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:50.8px;font-family:'Calisto MT';-inkscape-font-specification:'Calisto MT';fill:#ffffff;fill-opacity:0.956835;fill-rule:evenodd;stroke-width:0.264583"
+           x="52.891251"
+           y="200.50554"
+           id="text236"
+           inkscape:label="r2"
+           clip-path="none"><tspan
+             sodipodi:role="line"
+             id="tspan234"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:50.8px;font-family:'Calisto MT';-inkscape-font-specification:'Calisto MT';fill:#ffffff;stroke-width:0.264583"
+             x="52.891251"
+             y="200.50554">r</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:50.8px;font-family:'Calisto MT';-inkscape-font-specification:'Calisto MT';fill:#ffffff;fill-opacity:0.956835;fill-rule:evenodd;stroke-width:0.264583"
+           x="-54.47625"
+           y="200.50238"
+           id="text398"
+           transform="scale(-1,1)"
+           inkscape:label="r1"
+           clip-path="none"><tspan
+             sodipodi:role="line"
+             id="tspan396"
+             style="fill:#ffffff;stroke-width:0.264583"
+             x="-54.47625"
+             y="200.50238">r</tspan></text>
+      </g>
+    </g>
+  </g>
+</svg>
