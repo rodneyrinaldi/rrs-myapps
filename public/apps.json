@@ -15,13 +15,69 @@
     "link": "https://rodneyrinaldi.com.br"
   },
   {
-    "name": "taskpilot",
-    "title": "Task Pilot PJE",
+    "name": "taskpilotold",
+    "title": "Task Pilot PJE OLD",
     "link": "https://taskpilot.servicos.adv.br"
+  },
+  {
+    "name": "feepilotold",
+    "title": "Fee Pilot AOB OLD",
+    "link": "https://feepilot.servicos.adv.br"
   },
   {
     "name": "feepilot",
     "title": "Fee Pilot AOB",
-    "link": "https://feepilot.servicos.adv.br"
+    "link": "https://servicos.adv.br/feepilot"
+  },
+  {
+    "name": "feepilot guia",
+    "title": "Fee Pilot AOB Guia",
+    "link": "https://servicos.adv.br/feepilot/guia"
+  },
+  {
+    "name": "feepilot demo",
+    "title": "Fee Pilot AOB Demo",
+    "link": "https://servicos.adv.br/feepilot/demo"
+  },
+  {
+    "name": "taskpilot",
+    "title": "Task Pilot AOB",
+    "link": "https://servicos.adv.br/taskpilot"
+  },
+  {
+    "name": "taskpilot guia",
+    "title": "Task Pilot AOB Guia",
+    "link": "https://servicos.adv.br/taskpilot/guia"
+  },
+  {
+    "name": "taskilot demo",
+    "title": "Task Pilot AOB Demo",
+    "link": "https://servicos.adv.br/taskpilot/demo"
+  },
+  {
+    "name": "auxiliomaternidade",
+    "title": "Auxilio Maternidade",
+    "link": "https://auxiliomaternidade.rodneyrinaldi.com.br/"
+  },
+  {
+    "name": "inventario",
+    "title": "Inventários",
+    "link": "https://inventario.rodneyrinaldi.com.br/"
+  },
+  {
+    "name": "imovel",
+    "title": "Imóveis Venda",
+    "link": "https://www.autorizacao.adv.br//"
+  },
+  {
+    "name": "autorizacao",
+    "title": "Autorização",
+    "link": "https://www.autorizacao.adv.br/"
+  },
+  {
+    "name": "julgado",
+    "title": "Julagos IA",
+    "link": "https://www.julgados.ia.br"
   }
+
 ]
