@@ -24,6 +24,22 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Rodney Rinaldi | Advogado",
   description: "Rodney Rinaldi Advogado Especialista em Tecnologia e Negócios.",
+  themeColor: '#111827',
+  manifest: '/manifest.json',
+  icons: {
+    icon: [
+      { url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' }
+    ],
+    other: [
+      { rel: 'apple-touch-icon', url: '/icons/icon-192.png' }
+    ]
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'Seu App'
+  }
 };
 
 export default function RootLayout({
