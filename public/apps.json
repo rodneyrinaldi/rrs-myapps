@@ -5,24 +5,29 @@
     "link": "https://mylinks.rrs.net.br"
   },
   {
-    "name": "rodneyrinaldiadvogado",
-    "title": "rodney rinaldi advogado",
-    "link": "https://advogado.rodneyrinaldi.com.br"
-  },
-  {
     "name": "rodneyrinaldi",
     "title": "rodney rinaldi",
     "link": "https://rodneyrinaldi.com.br"
   },
   {
-    "name": "taskpilotold",
-    "title": "Task Pilot PJE OLD",
-    "link": "https://taskpilot.servicos.adv.br"
+    "name": "rodneyrinaldiadvogado",
+    "title": "rodney rinaldi advogado",
+    "link": "https://advogado.rodneyrinaldi.com.br"
   },
   {
-    "name": "feepilotold",
-    "title": "Fee Pilot AOB OLD",
-    "link": "https://feepilot.servicos.adv.br"
+    "name": "rodneyrinaldiadvogado",
+    "title": "rodney rinaldi advogado",
+    "link": "https://inventario.rodneyrinaldi.com.br"
+  },  
+  {
+    "name": "rodneyrinaldidev",
+    "title": "rodney rinaldi dev",
+    "link": "https://dev.rodneyrinaldi.com.br"
+  },  
+  {
+    "name": "servicos",
+    "title": "Servicos ADV",
+    "link": "https://servicos.adv.br"
   },
   {
     "name": "feepilot",
@@ -60,22 +65,7 @@
     "link": "https://auxiliomaternidade.rodneyrinaldi.com.br/"
   },
   {
-    "name": "inventario",
-    "title": "Inventários",
-    "link": "https://inventario.rodneyrinaldi.com.br/"
-  },
-  {
-    "name": "imovel",
-    "title": "Imóveis Venda",
-    "link": "https://www.autorizacao.adv.br//"
-  },
-  {
-    "name": "autorizacao",
-    "title": "Autorização",
-    "link": "https://www.autorizacao.adv.br/"
-  },
-  {
-    "name": "julgado",
+    "name": "julgados",
     "title": "Julagos IA",
     "link": "https://www.julgados.ia.br"
   }
