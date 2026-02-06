@@ -20,8 +20,13 @@
     "link": "https://inventario.rodneyrinaldi.com.br"
   },  
   {
+    "name": "auxiliomaternidade",
+    "title": "R2 Auxilio Maternidade",
+    "link": "https://auxiliomaternidade.rodneyrinaldi.com.br/"
+  },
+  {
     "name": "rodneyrinaldidev",
-    "title": "R2 Dev",
+    "title": "R2 DEV",
     "link": "https://dev.rodneyrinaldi.com.br"
   },  
   {
@@ -58,11 +63,6 @@
     "name": "taskilot demo",
     "title": "Task Pilot OAB Demo",
     "link": "https://servicos.adv.br/taskpilot/demo"
-  },
-  {
-    "name": "auxiliomaternidade",
-    "title": "R2 Auxilio Maternidade",
-    "link": "https://auxiliomaternidade.rodneyrinaldi.com.br/"
   },
   {
     "name": "julgados",
