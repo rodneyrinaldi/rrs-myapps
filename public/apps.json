@@ -2,72 +2,103 @@
   {
     "name": "mylinks",
     "title": "Mylinks RRS",
-    "link": "https://mylinks.rrs.net.br"
+    "link": "https://mylinks.rrs.net.br",
+    "category": "Projetos Pessoais"
+  },
+  {
+    "name": "mytalks",
+    "title": "Julagos IA",
+    "link": "https://mytalks.rrs.net.br",
+    "category": "Corporativo"
   },
   {
     "name": "rodneyrinaldi",
     "title": "R2 Page",
-    "link": "https://rodneyrinaldi.com.br"
+    "link": "https://rodneyrinaldi.com.br",
+    "category": "Projetos Pessoais"
   },
   {
     "name": "rodneyrinaldiadvogado",
     "title": "R2 Advogado",
-    "link": "https://advogado.rodneyrinaldi.com.br"
+    "link": "https://advogado.rodneyrinaldi.com.br",
+    "category": "Jurídico"
   },
   {
     "name": "rodneyrinaldiinventario",
     "title": "R2 Inventário",
-    "link": "https://inventario.rodneyrinaldi.com.br"
-  },  
+    "link": "https://inventario.rodneyrinaldi.com.br",
+    "category": "Jurídico"
+  },
   {
     "name": "auxiliomaternidade",
     "title": "R2 Auxilio Maternidade",
-    "link": "https://auxiliomaternidade.rodneyrinaldi.com.br/"
+    "link": "https://auxiliomaternidade.rodneyrinaldi.com.br/",
+    "category": "Jurídico"
   },
   {
     "name": "rodneyrinaldidev",
     "title": "R2 DEV",
-    "link": "https://dev.rodneyrinaldi.com.br"
-  },  
+    "link": "https://dev.rodneyrinaldi.com.br",
+    "category": "Tecnologia / Dev"
+  },
   {
     "name": "servicos",
     "title": "Serviços ADV",
-    "link": "https://servicos.adv.br"
+    "link": "https://servicos.adv.br",
+    "category": "Jurídico"
   },
   {
     "name": "feepilot",
     "title": "Fee Pilot OAB",
-    "link": "https://servicos.adv.br/feepilot"
+    "link": "https://servicos.adv.br/feepilot",
+    "category": "Jurídico"
   },
   {
     "name": "feepilot guia",
     "title": "Fee Pilot OAB Guia",
-    "link": "https://servicos.adv.br/feepilot/guia"
+    "link": "https://servicos.adv.br/feepilot/guia",
+    "category": "Jurídico"
   },
   {
     "name": "feepilot demo",
     "title": "Fee Pilot OAB Demo",
-    "link": "https://servicos.adv.br/feepilot/demo"
+    "link": "https://servicos.adv.br/feepilot/demo",
+    "category": "Jurídico"
   },
   {
     "name": "taskpilot",
     "title": "Task Pilot OAB",
-    "link": "https://servicos.adv.br/taskpilot"
+    "link": "https://servicos.adv.br/taskpilot",
+    "category": "Jurídico"
   },
   {
     "name": "taskpilot guia",
     "title": "Task Pilot OAB Guia",
-    "link": "https://servicos.adv.br/taskpilot/guia"
+    "link": "https://servicos.adv.br/taskpilot/guia",
+    "category": "Jurídico"
   },
   {
     "name": "taskilot demo",
     "title": "Task Pilot OAB Demo",
-    "link": "https://servicos.adv.br/taskpilot/demo"
+    "link": "https://servicos.adv.br/taskpilot/demo",
+    "category": "Jurídico"
   },
   {
     "name": "julgados",
     "title": "Julagos IA",
-    "link": "https://www.julgados.ia.br"
+    "link": "https://www.julgados.ia.br",
+    "category": "Tecnologia / Jurídico"
+  },
+  {
+    "name": "eixo historico",
+    "title": "Eixo Historico",
+    "link": "https://www.eixohistorico.com.br",
+    "category": "História / Jurídico"
+  },
+  {
+    "name": "eixo historico rrs",
+    "title": "Eixo Historico RRS",
+    "link": "https://eixohistorico.rrs.net.br",
+    "category": "História / Jurídico"
   }
-
 ]
