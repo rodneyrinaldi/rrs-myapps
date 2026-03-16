@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Image from 'next/image';
+import { useState, useEffect, useMemo } from 'react';
 import {
   FaSpinner,
   FaExternalLinkAlt,
@@ -27,50 +26,53 @@ interface AppLink {
 
 type SortMode = 'az' | 'za' | 'recent' | 'used';
 
-const DEFAULT_ICON_PATH = '/images/default.png';
+const CATEGORY_COLORS = [
+  '#6366F1', // Indigo
+  '#10B981', // Emerald
+  '#F59E0B', // Amber
+  '#EC4899', // Pink
+  '#3B82F6', // Blue
+  '#8B5CF6', // Violet
+  '#14B8A6', // Teal
+  '#EF4444', // Red
+  '#84CC16', // Lime
+];
 
 // ------------------------------
-// Ícone com fallback + SVG silencioso
+// Ícone baseado em iniciais
 // ------------------------------
 
-function IconWithFallback({ name }: { name: string }) {
-  const [imageSrc, setImageSrc] = useState(DEFAULT_ICON_PATH);
-
-  useEffect(() => {
-    const svgPath = `/images/${name.toLowerCase()}.svg`;
-    const pngPath = `/images/${name.toLowerCase()}.png`;
-
-    async function loadIcon() {
-      try {
-        const svg = await fetch(svgPath, { method: 'HEAD' });
-        if (svg.ok) {
-          setImageSrc(svgPath);
-          return;
-        }
-
-        const png = await fetch(pngPath, { method: 'HEAD' });
-        if (png.ok) {
-          setImageSrc(pngPath);
-          return;
-        }
-
-        setImageSrc(DEFAULT_ICON_PATH);
-      } catch {
-        setImageSrc(DEFAULT_ICON_PATH);
-      }
-    }
-
-    loadIcon();
-  }, [name]);
+function InitialsIcon({
+  title,
+  color,
+  viewMode
+}: {
+  title: string;
+  color: string;
+  viewMode: 'grid' | 'list';
+}) {
+  const initials = title
+    .split(' ')
+    .filter(Boolean)
+    .map(word => word[0])
+    .join('')
+    .substring(0, 2)
+    .toUpperCase();
 
   return (
-    <Image
-      src={imageSrc}
-      alt={`${name} Ícone`}
-      width={72}
-      height={72}
-      className="w-4/5 h-4/5 object-contain rounded-xl transition-transform duration-200 group-hover:scale-110"
-    />
+    <div
+      className="flex items-center justify-center rounded-xl shadow-inner"
+      style={{
+        width: viewMode === 'grid' ? '64px' : '48px',
+        height: viewMode === 'grid' ? '64px' : '48px',
+        backgroundColor: color,
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: viewMode === 'grid' ? '1.5rem' : '1.2rem'
+      }}
+    >
+      {initials}
+    </div>
   );
 }
 
@@ -209,6 +211,26 @@ export default function AppAccessPage() {
   };
 
   // ------------------------------
+  // Cores por categoria
+  // ------------------------------
+
+  const categoryColorMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    let index = 0;
+
+    const uniqueCategories = Array.from(
+      new Set(links.map(l => l.category || 'Outros'))
+    );
+
+    uniqueCategories.forEach(cat => {
+      map[cat] = CATEGORY_COLORS[index % CATEGORY_COLORS.length];
+      index++;
+    });
+
+    return map;
+  }, [links]);
+
+  // ------------------------------
   // Filtragem e ordenação
   // ------------------------------
 
@@ -282,7 +304,7 @@ export default function AppAccessPage() {
           <input
             type="text"
             placeholder="Buscar app..."
-            className="w-full pl-10 pr-4 py-2 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
+            className="w-full pl-10 pr-4 py-2 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 bg-transparent text-gray-700 dark:text-gray-200"
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
@@ -291,7 +313,7 @@ export default function AppAccessPage() {
         {/* Ordenação */}
         <select
           aria-label="Ordenar aplicativos"
-          className="px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200"
+          className="px-4 py-2 rounded-full border border-gray-400 text-gray-600 bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 transition"
           value={sortMode}
           onChange={(e) => setSortMode(e.target.value as SortMode)}
         >
@@ -304,7 +326,7 @@ export default function AppAccessPage() {
         {/* Modo de visualização */}
         <button
           onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-          className="px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 flex items-center gap-2"
+          className="px-4 py-2 rounded-full border border-gray-400 text-gray-600 bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 transition flex items-center gap-2"
         >
           {viewMode === 'grid' ? <FaList /> : <FaThLarge />}
           {viewMode === 'grid' ? 'Lista' : 'Grade'}
@@ -313,69 +335,99 @@ export default function AppAccessPage() {
 
       {/* Categorias */}
       <div className="flex justify-center gap-3 mb-8 flex-wrap">
-        {categories.map((cat, index) => (
-          <button
-            key={index}
-            onClick={() => setActiveCategory(cat)}
-            className={`px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 transition
-              ${
-                activeCategory === cat
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
-              }
-            `}
-          >
-            <FaFolder /> {cat}
-          </button>
-        ))}
+        {categories.map((cat, index) => {
+          const isSpecial = ['Todos', 'Favoritos', 'Recentes'].includes(cat);
+          const color = isSpecial ? '#6B7280' : categoryColorMap[cat] || '#999';
+          const isActive = activeCategory === cat;
+
+          return (
+            <button
+              key={index}
+              onClick={() => setActiveCategory(cat)}
+              className="px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 transition shadow"
+              style={{
+                backgroundColor: isActive ? color : `${color}22`,
+                color: isActive ? 'white' : color,
+                border: `1px solid ${color}55`
+              }}
+            >
+              <FaFolder />
+              {cat}
+            </button>
+          );
+        })}
       </div>
 
       {/* Lista ou grade */}
       <div
         className={
           viewMode === 'grid'
-            ? 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-8 px-6'
+            ? 'grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-6 px-6'
             : 'flex flex-col gap-4 px-6'
         }
       >
-        {filteredLinks.map((item, index) => (
-          <div
-            key={index}
-            className="relative group cursor-pointer flex items-center gap-4 p-3 bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transition"
-            onClick={() => {
-              setSelected(item);
-              registerUsage(item.name);
-            }}
-          >
-            {/* Favorito */}
+        {filteredLinks.map((item, index) => {
+          const color = categoryColorMap[item.category || 'Outros'];
+
+          return (
             <div
-              className="absolute top-2 right-2 text-yellow-400 text-xl"
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleFavorite(item.name);
+              key={index}
+              className={
+                viewMode === 'grid'
+                  ? 'flex flex-col items-center justify-center p-3 rounded-xl shadow hover:shadow-lg transition cursor-pointer'
+                  : 'relative group cursor-pointer flex items-center gap-4 p-3 rounded-xl shadow hover:shadow-lg transition'
+              }
+              style={{
+                backgroundColor: `${color}22`,
+                border: `1px solid ${color}55`,
+                ...(viewMode === 'grid' && {
+                  width: '100%',
+                  aspectRatio: '1 / 1'
+                })
+              }}
+              onClick={() => {
+                setSelected(item);
+                registerUsage(item.name);
               }}
             >
-              {favorites.includes(item.name) ? <FaStar /> : <FaRegStar />}
-            </div>
+              {/* Favorito */}
+              {viewMode === 'list' && (
+                <div
+                  className="absolute top-2 right-2 text-yellow-400 text-xl"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleFavorite(item.name);
+                  }}
+                >
+                  {favorites.includes(item.name) ? <FaStar /> : <FaRegStar />}
+                </div>
+              )}
 
-            {/* Ícone */}
-            <div className="w-16 h-16 flex items-center justify-center">
-              <IconWithFallback name={item.name} />
-            </div>
+              {/* Ícone */}
+              <InitialsIcon
+                title={item.title}
+                color={color}
+                viewMode={viewMode}
+              />
 
-            {/* Texto (modo lista) */}
-            {viewMode === 'list' && (
-              <div className="flex flex-col">
-                <span className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+              {/* Texto */}
+              {viewMode === 'list' ? (
+                <div className="flex flex-col">
+                  <span className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                    {item.title}
+                  </span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                    {item.category || 'Outros'}
+                  </span>
+                </div>
+              ) : (
+                <span className="mt-2 text-xs font-medium text-gray-700 dark:text-gray-300 text-center">
                   {item.title}
                 </span>
-                <span className="text-sm text-gray-500 dark:text-gray-400">
-                  {item.category || 'Outros'}
-                </span>
-              </div>
-            )}
-          </div>
-        ))}
+              )}
+            </div>
+          );
+        })}
       </div>
 
       {/* Modal */}
