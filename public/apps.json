@@ -7,9 +7,15 @@
   },
   {
     "name": "mytalks",
-    "title": "Julagos IA",
+    "title": "Palestras",
     "link": "https://mytalks.rrs.net.br",
-    "category": "Corporativo"
+    "category": "Educacional"
+  },
+  {
+    "name": "my talks oab-iacom",
+    "title": "Palestra OAB IACom",
+    "link": "https://mytalks.rrs.net.br/oab-iacom",
+    "category": "Educacional"
   },
   {
     "name": "rodneyrinaldi",
