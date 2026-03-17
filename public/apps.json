@@ -3,13 +3,7 @@
     "name": "mylinks",
     "title": "Mylinks RRS",
     "link": "https://mylinks.rrs.net.br",
-    "category": "Projetos Pessoais"
-  },
-  {
-    "name": "mytalks",
-    "title": "Palestras",
-    "link": "https://mytalks.rrs.net.br",
-    "category": "Educacional"
+    "category": "Pessoal"
   },
   {
     "name": "my talks oab-iacom",
@@ -21,7 +15,7 @@
     "name": "rodneyrinaldi",
     "title": "R2 Page",
     "link": "https://rodneyrinaldi.com.br",
-    "category": "Projetos Pessoais"
+    "category": "Pessoal"
   },
   {
     "name": "rodneyrinaldiadvogado",
@@ -45,7 +39,7 @@
     "name": "rodneyrinaldidev",
     "title": "R2 DEV",
     "link": "https://dev.rodneyrinaldi.com.br",
-    "category": "Tecnologia / Dev"
+    "category": "Tecnologia"
   },
   {
     "name": "servicos",
@@ -99,12 +93,6 @@
     "name": "eixo historico",
     "title": "Eixo Historico",
     "link": "https://www.eixohistorico.com.br",
-    "category": "História / Jurídico"
-  },
-  {
-    "name": "eixo historico rrs",
-    "title": "Eixo Historico RRS",
-    "link": "https://eixohistorico.rrs.net.br",
     "category": "História / Jurídico"
   }
 ]
