@@ -94,5 +94,12 @@
     "title": "Eixo Historico",
     "link": "https://www.eixohistorico.com.br",
     "category": "História / Jurídico"
+  },
+  {
+    "name": "law force",
+    "title": "Law Force",
+    "link": "https://lawforce.vercel.app/",
+    "category": "Jurídico"
   }
+
 ]
