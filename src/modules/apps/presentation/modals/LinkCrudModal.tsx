@@ -93,12 +93,12 @@ export function LinkCrudModal({ links, categories, categoryColors, onSave, onClo
 
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 animate-fadeIn overflow-y-auto p-4 sm:p-6 flex items-center justify-center">
-      <div className="mx-auto bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg p-6 flex flex-col border border-gray-200 dark:border-gray-700 max-h-[90vh]">
-        <div className="flex items-center justify-between mb-4">
+      <div className="mx-auto my-2 sm:my-6 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg p-6 flex flex-col border border-gray-200 dark:border-gray-700 max-h-[calc(100vh-1rem)] sm:max-h-[calc(100vh-3rem)]">
+        <div className="shrink-0 flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">Gerenciar Links</h2>
           <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition"><FaTimes /></button>
         </div>
-        <div className="flex flex-col gap-4">
+        <div className="shrink-0 flex flex-col gap-4">
           <div className="flex gap-2 items-center">
             <input
               type="text"
@@ -181,93 +181,95 @@ export function LinkCrudModal({ links, categories, categoryColors, onSave, onClo
           {formError && <p className="text-xs text-red-600 mt-1">{formError}</p>}
         </div>
         {/* Lista de links */}
-        <ul className="mt-6 flex-1 overflow-y-auto flex flex-col gap-2 pr-1 min-h-[180px]">
-          {list.length === 0 && (
-            <li className="text-sm text-gray-400 text-center py-4">Nenhum link cadastrado.</li>
-          )}
-          {list.map((item, index) => {
-            const rowColor = item.category && categoryColors[item.category] ? categoryColors[item.category] : '#6366F1';
-            return (
-              <li
-                key={item.name}
-                className="flex items-center gap-2 px-4 py-3 rounded-lg border"
-                style={{ backgroundColor: `${rowColor}22`, borderColor: `${rowColor}66` }}
-              >
-                {editingName === item.name ? (
-                  <>
-                    <input
-                      autoFocus
-                      type="text"
-                      value={form.title}
-                      onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
-                      className="flex-1 px-5 py-2 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 bg-transparent text-gray-700 dark:text-gray-200 text-sm"
-                    />
-                    <input
-                      type="url"
-                      value={form.link}
-                      onChange={e => setForm(f => ({ ...f, link: e.target.value }))}
-                      className="flex-1 px-5 py-2 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 bg-transparent text-gray-700 dark:text-gray-200 text-sm"
-                    />
-                    <select
-                      value={form.category ?? ''}
-                      onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
-                      className="flex-1 pl-3 pr-4 py-2 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 bg-transparent text-gray-700 dark:text-gray-200 text-sm"
-                    >
-                      <option value="">Sem categoria</option>
-                      {categories.map(cat => (
-                        <option key={cat} value={cat} style={{ color: categoryColors[cat] || '#111827' }}>{cat}</option>
-                      ))}
-                    </select>
-                    <a
-                      href="#"
-                      onClick={e => { e.preventDefault(); confirmEdit(); }}
-                      className="text-sm px-2 transition hover:underline focus:underline"
-                      style={{ color: 'rgba(255,255,255,0.75)' }}
-                      title="Confirmar"
-                    >
-                      confirmar
-                    </a>
-                    <a
-                      href="#"
-                      onClick={e => { e.preventDefault(); resetForm(); }}
-                      className="text-sm px-2 transition hover:underline focus:underline"
-                      style={{ color: 'rgba(255,255,255,0.55)' }}
-                      title="Cancelar"
-                    >
-                      cancelar
-                    </a>
-                  </>
-                ) : (
-                  <>
-                    <span className="flex-1 font-medium text-gray-800 dark:text-gray-100 pr-6">{item.title}</span>
-                    <span className="select-none text-gray-400 dark:text-gray-500 px-1">|</span>
-                    <a
-                      href="#"
-                      onClick={e => { e.preventDefault(); startEdit(item); }}
-                      className="text-sm px-2 transition hover:underline focus:underline"
-                      style={{ color: 'rgba(255,255,255,0.75)' }}
-                      title="Editar"
-                    >
-                      editar
-                    </a>
-                    <a
-                      href="#"
-                      onClick={e => {
-                        e.preventDefault();
-                        if (window.confirm('Tem certeza que deseja excluir este link?')) handleDelete(item.name);
-                      }}
-                      className="text-sm px-2 transition hover:underline focus:underline"
-                      style={{ color: 'rgba(255,255,255,0.55)' }}
-                      title="Excluir"
-                    >
-                      excluir
-                    </a>
-                  </>
-                )}
-              </li>
-            );
-          })}
-        </ul>
+        <div className="mt-8 max-h-[50vh] overflow-y-auto">
+          <ul className="flex flex-col gap-2 pr-1 min-h-[120px]">
+            {list.length === 0 && (
+              <li className="text-sm text-gray-400 text-center py-4">Nenhum link cadastrado.</li>
+            )}
+            {list.map((item, index) => {
+              const rowColor = item.category && categoryColors[item.category] ? categoryColors[item.category] : '#6366F1';
+              return (
+                <li
+                  key={item.name}
+                  className="flex items-center gap-2 px-4 py-3 rounded-lg border"
+                  style={{ backgroundColor: `${rowColor}22`, borderColor: `${rowColor}66` }}
+                >
+                  {editingName === item.name ? (
+                    <>
+                      <input
+                        autoFocus
+                        type="text"
+                        value={form.title}
+                        onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
+                        className="flex-1 px-5 py-2 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 bg-transparent text-gray-700 dark:text-gray-200 text-sm"
+                      />
+                      <input
+                        type="url"
+                        value={form.link}
+                        onChange={e => setForm(f => ({ ...f, link: e.target.value }))}
+                        className="flex-1 px-5 py-2 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 bg-transparent text-gray-700 dark:text-gray-200 text-sm"
+                      />
+                      <select
+                        value={form.category ?? ''}
+                        onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
+                        className="flex-1 pl-3 pr-4 py-2 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 bg-transparent text-gray-700 dark:text-gray-200 text-sm"
+                      >
+                        <option value="">Sem categoria</option>
+                        {categories.map(cat => (
+                          <option key={cat} value={cat} style={{ color: categoryColors[cat] || '#111827' }}>{cat}</option>
+                        ))}
+                      </select>
+                      <a
+                        href="#"
+                        onClick={e => { e.preventDefault(); confirmEdit(); }}
+                        className="text-sm px-2 transition hover:underline focus:underline"
+                        style={{ color: 'rgba(255,255,255,0.75)' }}
+                        title="Confirmar"
+                      >
+                        confirmar
+                      </a>
+                      <a
+                        href="#"
+                        onClick={e => { e.preventDefault(); resetForm(); }}
+                        className="text-sm px-2 transition hover:underline focus:underline"
+                        style={{ color: 'rgba(255,255,255,0.55)' }}
+                        title="Cancelar"
+                      >
+                        cancelar
+                      </a>
+                    </>
+                  ) : (
+                    <>
+                      <span className="flex-1 font-medium text-gray-800 dark:text-gray-100 pr-6">{item.title}</span>
+                      <span className="select-none text-gray-400 dark:text-gray-500 px-1">|</span>
+                      <a
+                        href="#"
+                        onClick={e => { e.preventDefault(); startEdit(item); }}
+                        className="text-sm px-2 transition hover:underline focus:underline"
+                        style={{ color: 'rgba(255,255,255,0.75)' }}
+                        title="Editar"
+                      >
+                        editar
+                      </a>
+                      <a
+                        href="#"
+                        onClick={e => {
+                          e.preventDefault();
+                          if (window.confirm('Tem certeza que deseja excluir este link?')) handleDelete(item.name);
+                        }}
+                        className="text-sm px-2 transition hover:underline focus:underline"
+                        style={{ color: 'rgba(255,255,255,0.55)' }}
+                        title="Excluir"
+                      >
+                        excluir
+                      </a>
+                    </>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       </div>
     </div>
   );

@@ -189,7 +189,7 @@ export default function AppAccessPage() {
     async function initializeLocalDb() {
       try {
         const snapshot = await loadAppsDb();
-        setLinks(snapshot.links);
+        setLinks(snapshot.links.slice(0, 3)); // Limita para apenas 3 links para teste
         setCategoriesCatalog(snapshot.categories);
         setCategoryColors(snapshot.categoryColors);
         setFavorites(snapshot.favorites);
