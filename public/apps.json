@@ -48,6 +48,12 @@
     "category": "Jurídico"
   },
   {
+    "name": "servicos status",
+    "title": "Serviços ADV Status",
+    "link": "https://servicos.adv.br/status",
+    "category": "Jurídico"
+  },
+  {
     "name": "feepilot",
     "title": "Fee Pilot OAB",
     "link": "https://feepilot.servicos.adv.br",
