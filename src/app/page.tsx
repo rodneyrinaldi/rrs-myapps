@@ -26,9 +26,17 @@ import {
   saveAppsDb,
   parseImportedDb,
   downloadAppsDb,
+  resetAppsDb,
   type AppLink,
   type AppsLocalDb
 } from '@/modules/apps/infrastructure/local-db';
+  // Reset banco local
+  const handleResetDb = () => {
+    if (window.confirm('Tem certeza que deseja resetar o banco local? Todos os dados locais serão apagados e restaurados do padrão na próxima visita ou importação.')) {
+      resetAppsDb();
+      setSyncMessage('Banco local resetado. Ao recarregar ou na próxima visita, o banco será recomposto.');
+    }
+  };
 import { CategoryCrudModal } from '@/modules/apps/presentation/modals/CategoryCrudModal';
 import { LinkCrudModal } from '@/modules/apps/presentation/modals/LinkCrudModal';
 
@@ -392,7 +400,7 @@ export default function AppAccessPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-8 pb-16 transition">
 
       <h1 className="text-center text-3xl font-extrabold text-gray-900 dark:text-gray-100 mb-6">
-        R2 MyApps
+        rrs.net.br/myapps
       </h1>
 
       {/* Busca sempre visível */}
@@ -423,90 +431,91 @@ export default function AppAccessPage() {
         </button>
 
         {toolbarOpen && (
-          <div className="flex flex-wrap justify-center gap-2 mt-2">
-
-            {/* Ordenação — ícone-only */}
-            {([
-              { mode: 'az',     icon: <FaSortAlphaDown />,    label: 'Nome A–Z' },
-              { mode: 'za',     icon: <FaSortAlphaDownAlt />, label: 'Nome Z–A' },
-              { mode: 'recent', icon: <FaClock />,             label: 'Recentes' },
-              { mode: 'used',   icon: <FaFire />,              label: 'Mais usados' },
-            ] as const).map(({ mode, icon, label }) => (
+          <div className="flex flex-wrap justify-center gap-4 mt-2">
+            {/* Bloco de Ordenação e Visualização */}
+            <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-indigo-50 dark:bg-indigo-900/40 border border-indigo-200 dark:border-indigo-700 shadow">
+              {([
+                { mode: 'az',     icon: <FaSortAlphaDown />,    label: 'Nome A–Z' },
+                { mode: 'za',     icon: <FaSortAlphaDownAlt />, label: 'Nome Z–A' },
+                { mode: 'recent', icon: <FaClock />,             label: 'Recentes' },
+                { mode: 'used',   icon: <FaFire />,              label: 'Mais usados' },
+              ] as const).map(({ mode, icon, label }) => (
+                <button
+                  key={mode}
+                  onClick={() => setSortMode(mode)}
+                  title={label}
+                  className={`w-8 h-8 flex items-center justify-center rounded-full border transition ${
+                    sortMode === mode
+                      ? 'bg-indigo-600 border-indigo-600 text-white'
+                      : 'border-indigo-400 text-indigo-600 bg-white hover:bg-indigo-100 dark:bg-indigo-950 dark:hover:bg-indigo-800'
+                  }`}
+                >
+                  {icon}
+                </button>
+              ))}
+              <span className="w-px h-8 bg-indigo-300 dark:bg-indigo-700 mx-1" />
               <button
-                key={mode}
-                onClick={() => setSortMode(mode)}
-                title={label}
-                className={`w-8 h-8 flex items-center justify-center rounded-full border transition ${
-                  sortMode === mode
-                    ? 'bg-indigo-600 border-indigo-600 text-white'
-                    : 'border-gray-400 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800'
-                }`}
+                onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
+                title={viewMode === 'grid' ? 'Modo lista' : 'Modo grade'}
+                className="w-8 h-8 flex items-center justify-center rounded-full border border-indigo-400 text-indigo-600 bg-white hover:bg-indigo-100 dark:bg-indigo-950 dark:hover:bg-indigo-800 transition"
               >
-                {icon}
+                {viewMode === 'grid' ? <FaList /> : <FaThLarge />}
               </button>
-            ))}
+            </div>
 
-            {/* Separador visual */}
-            <span className="w-px h-8 bg-gray-300 dark:bg-gray-600" />
+            {/* Bloco de Importação/Exportação */}
+            <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-blue-50 dark:bg-blue-900/40 border border-blue-200 dark:border-blue-700 shadow">
+              <button
+                onClick={handleExportDb}
+                title="Exportar banco local"
+                className="w-8 h-8 flex items-center justify-center rounded-full border border-blue-400 text-blue-600 bg-white hover:bg-blue-100 dark:bg-blue-950 dark:hover:bg-blue-800 transition"
+              >
+                <FaDownload />
+              </button>
+              <button
+                onClick={() => importFileRef.current?.click()}
+                title="Importar banco local"
+                className="w-8 h-8 flex items-center justify-center rounded-full border border-blue-400 text-blue-600 bg-white hover:bg-blue-100 dark:bg-blue-950 dark:hover:bg-blue-800 transition"
+              >
+                <FaUpload />
+              </button>
+              <input
+                ref={importFileRef}
+                type="file"
+                accept="application/json"
+                className="hidden"
+                onChange={handleImportDb}
+              />
+            </div>
 
-            {/* Modo de visualização */}
-            <button
-              onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-              title={viewMode === 'grid' ? 'Modo lista' : 'Modo grade'}
-              className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-400 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-            >
-              {viewMode === 'grid' ? <FaList /> : <FaThLarge />}
-            </button>
+            {/* Bloco de Gerenciamento */}
+            <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-green-50 dark:bg-green-900/40 border border-green-200 dark:border-green-700 shadow">
+              <button
+                onClick={() => setShowCategoryCrud(true)}
+                title="Gerenciar categorias"
+                className="w-8 h-8 flex items-center justify-center rounded-full border border-green-400 text-green-600 bg-white hover:bg-green-100 dark:bg-green-950 dark:hover:bg-green-800 transition"
+              >
+                <FaTags />
+              </button>
+              <button
+                onClick={() => setShowLinkCrud(true)}
+                title="Gerenciar links"
+                className="w-8 h-8 flex items-center justify-center rounded-full border border-green-400 text-green-600 bg-white hover:bg-green-100 dark:bg-green-950 dark:hover:bg-green-800 transition"
+              >
+                <FaLink />
+              </button>
+            </div>
 
-            {/* Separador visual */}
-            <span className="w-px h-8 bg-gray-300 dark:bg-gray-600" />
-
-            {/* Exportar */}
-            <button
-              onClick={handleExportDb}
-              title="Exportar banco local"
-              className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-400 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-            >
-              <FaDownload />
-            </button>
-
-            {/* Importar */}
-            <button
-              onClick={() => importFileRef.current?.click()}
-              title="Importar banco local"
-              className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-400 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-            >
-              <FaUpload />
-            </button>
-
-            <input
-              ref={importFileRef}
-              type="file"
-              accept="application/json"
-              className="hidden"
-              onChange={handleImportDb}
-            />
-
-            {/* Separador visual */}
-            <span className="w-px h-8 bg-gray-300 dark:bg-gray-600" />
-
-            {/* Gerenciar categorias */}
-            <button
-              onClick={() => setShowCategoryCrud(true)}
-              title="Gerenciar categorias"
-              className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-400 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-            >
-              <FaTags />
-            </button>
-
-            {/* Gerenciar links */}
-            <button
-              onClick={() => setShowLinkCrud(true)}
-              title="Gerenciar links"
-              className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-400 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-            >
-              <FaLink />
-            </button>
+            {/* Bloco de Reset */}
+            <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-red-50 dark:bg-red-900/40 border border-red-200 dark:border-red-700 shadow">
+              <button
+                onClick={handleResetDb}
+                title="Resetar banco local"
+                className="w-8 h-8 flex items-center justify-center rounded-full border border-red-400 text-red-600 bg-white hover:bg-red-100 dark:bg-red-950 dark:hover:bg-red-800 transition"
+              >
+                <span className="text-lg font-bold">⟳</span>
+              </button>
+            </div>
           </div>
         )}
       </div>

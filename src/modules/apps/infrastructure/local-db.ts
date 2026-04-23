@@ -1,3 +1,7 @@
+// Remove o banco local para forçar reset na próxima visita
+export function resetAppsDb(): void {
+  localStorage.removeItem(STORAGE_KEY);
+}
 export interface AppLink {
   name: string;
   title: string;
