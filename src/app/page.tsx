@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef, type ChangeEvent } from 'react';
 import {
   FaSpinner,
   FaExternalLinkAlt,
@@ -10,19 +10,31 @@ import {
   FaStar,
   FaRegStar,
   FaThLarge,
-  FaList
+  FaList,
+  FaUpload,
+  FaDownload,
+  FaSortAlphaDown,
+  FaSortAlphaDownAlt,
+  FaClock,
+  FaFire,
+  FaChevronDown,
+  FaTags,
+  FaLink
 } from 'react-icons/fa';
+import {
+  loadAppsDb,
+  saveAppsDb,
+  parseImportedDb,
+  downloadAppsDb,
+  type AppLink,
+  type AppsLocalDb
+} from '@/modules/apps/infrastructure/local-db';
+import { CategoryCrudModal } from '@/modules/apps/presentation/modals/CategoryCrudModal';
+import { LinkCrudModal } from '@/modules/apps/presentation/modals/LinkCrudModal';
 
 // ------------------------------
 // Tipos e Constantes
 // ------------------------------
-
-interface AppLink {
-  name: string;
-  title: string;
-  link: string;
-  category?: string;
-}
 
 type SortMode = 'az' | 'za' | 'recent' | 'used';
 
@@ -140,6 +152,7 @@ export default function AppAccessPage() {
   const [links, setLinks] = useState<AppLink[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [syncMessage, setSyncMessage] = useState<string | null>(null);
 
   const [selected, setSelected] = useState<AppLink | null>(null);
   const [search, setSearch] = useState('');
@@ -150,35 +163,56 @@ export default function AppAccessPage() {
   const [favorites, setFavorites] = useState<string[]>([]);
   const [recent, setRecent] = useState<string[]>([]);
   const [usageCount, setUsageCount] = useState<Record<string, number>>({});
+  const [categoriesCatalog, setCategoriesCatalog] = useState<string[]>([]);
+  const [categoryColors, setCategoryColors] = useState<Record<string, string>>({});
+  const [dbReady, setDbReady] = useState(false);
+  const [toolbarOpen, setToolbarOpen] = useState(false);
+  const [showCategoryCrud, setShowCategoryCrud] = useState(false);
+  const [showLinkCrud, setShowLinkCrud] = useState(false);
+
+  const importFileRef = useRef<HTMLInputElement | null>(null);
 
   // ------------------------------
   // Carregar dados
   // ------------------------------
 
   useEffect(() => {
-    async function fetchLinks() {
+    async function initializeLocalDb() {
       try {
-        const response = await fetch('/apps.json');
-        if (!response.ok) throw new Error(`Erro ${response.status} ao carregar apps.json.`);
-        const data = await response.json();
-        setLinks(data);
+        const snapshot = await loadAppsDb();
+        setLinks(snapshot.links);
+        setCategoriesCatalog(snapshot.categories);
+        setCategoryColors(snapshot.categoryColors);
+        setFavorites(snapshot.favorites);
+        setRecent(snapshot.recent);
+        setUsageCount(snapshot.usageCount);
+        setDbReady(true);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Erro desconhecido.');
       } finally {
         setLoading(false);
       }
     }
-    fetchLinks();
 
-    const fav = localStorage.getItem('favorites');
-    if (fav) setFavorites(JSON.parse(fav));
-
-    const rec = localStorage.getItem('recent');
-    if (rec) setRecent(JSON.parse(rec));
-
-    const usage = localStorage.getItem('usageCount');
-    if (usage) setUsageCount(JSON.parse(usage));
+    initializeLocalDb();
   }, []);
+
+  useEffect(() => {
+    if (!dbReady) return;
+
+    const snapshot: AppsLocalDb = {
+      version: 1,
+      links,
+      categories: categoriesCatalog,
+      categoryColors,
+      favorites,
+      recent,
+      usageCount,
+      updatedAt: new Date().toISOString()
+    };
+
+    saveAppsDb(snapshot);
+  }, [dbReady, links, categoriesCatalog, categoryColors, favorites, recent, usageCount]);
 
   // ------------------------------
   // Favoritar
@@ -190,7 +224,6 @@ export default function AppAccessPage() {
       : [...favorites, name];
 
     setFavorites(updated);
-    localStorage.setItem('favorites', JSON.stringify(updated));
   };
 
   // ------------------------------
@@ -203,11 +236,76 @@ export default function AppAccessPage() {
       [name]: (usageCount[name] || 0) + 1
     };
     setUsageCount(updated);
-    localStorage.setItem('usageCount', JSON.stringify(updated));
 
     const updatedRecent = [name, ...recent.filter(r => r !== name)].slice(0, 10);
     setRecent(updatedRecent);
-    localStorage.setItem('recent', JSON.stringify(updatedRecent));
+  };
+
+  const handleExportDb = () => {
+    const snapshot: AppsLocalDb = {
+      version: 1,
+      links,
+      categories: categoriesCatalog,
+      categoryColors,
+      favorites,
+      recent,
+      usageCount,
+      updatedAt: new Date().toISOString()
+    };
+
+    downloadAppsDb(snapshot);
+    setSyncMessage('Exportacao concluida com sucesso.');
+  };
+
+  const handleSaveCategories = (payload: { categories: string[]; categoryColors: Record<string, string> }) => {
+    const { categories: updatedCategories, categoryColors: updatedColors } = payload;
+
+    const updatedLinks = links.map(l => {
+      if (l.category && !updatedCategories.includes(l.category)) {
+        return { ...l, category: undefined };
+      }
+      return l;
+    });
+
+    setLinks(updatedLinks);
+    setCategoriesCatalog(updatedCategories);
+    setCategoryColors(updatedColors);
+  };
+
+  const handleSaveLinks = (updatedLinks: AppLink[]) => {
+    setLinks(updatedLinks);
+
+    const categoriesFromLinks = updatedLinks
+      .map(link => link.category)
+      .filter((category): category is string => Boolean(category));
+
+    setCategoriesCatalog(prev => Array.from(new Set([...prev, ...categoriesFromLinks])));
+  };
+
+  const handleImportDb = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      const imported = parseImportedDb(text);
+
+      setLinks(imported.links);
+      setCategoriesCatalog(imported.categories);
+      setCategoryColors(imported.categoryColors);
+      setFavorites(imported.favorites);
+      setRecent(imported.recent);
+      setUsageCount(imported.usageCount);
+      setActiveCategory('Todos');
+      setSearch('');
+      setError(null);
+      setSyncMessage('Importacao concluida. Banco local atualizado.');
+    } catch (err) {
+      setSyncMessage(null);
+      setError(err instanceof Error ? err.message : 'Falha ao importar arquivo.');
+    } finally {
+      event.target.value = '';
+    }
   };
 
   // ------------------------------
@@ -218,17 +316,19 @@ export default function AppAccessPage() {
     const map: Record<string, string> = {};
     let index = 0;
 
-    const uniqueCategories = Array.from(
-      new Set(links.map(l => l.category || 'Outros'))
-    );
+    const linkedCategories = links
+      .map(link => link.category)
+      .filter((category): category is string => Boolean(category));
+
+    const uniqueCategories = Array.from(new Set([...categoriesCatalog, ...linkedCategories, 'Outros']));
 
     uniqueCategories.forEach(cat => {
-      map[cat] = CATEGORY_COLORS[index % CATEGORY_COLORS.length];
+      map[cat] = categoryColors[cat] || CATEGORY_COLORS[index % CATEGORY_COLORS.length];
       index++;
     });
 
     return map;
-  }, [links]);
+  }, [links, categoriesCatalog, categoryColors]);
 
   // ------------------------------
   // Filtragem e ordenação
@@ -238,7 +338,7 @@ export default function AppAccessPage() {
     'Todos',
     'Favoritos',
     'Recentes',
-    ...Array.from(new Set(links.map(app => app.category || 'Outros')))
+    ...Array.from(new Set([...categoriesCatalog, ...links.map(app => app.category || 'Outros')]))
   ];
 
   let filteredLinks = links.filter(app => {
@@ -292,13 +392,11 @@ export default function AppAccessPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-8 pb-16 transition">
 
       <h1 className="text-center text-3xl font-extrabold text-gray-900 dark:text-gray-100 mb-6">
-        Acesso Rápido
+        R2 MyApps
       </h1>
 
-      {/* Barra superior */}
-      <div className="flex flex-wrap justify-center gap-4 mb-6">
-
-        {/* Busca */}
+      {/* Busca sempre visível */}
+      <div className="flex justify-center mb-2 px-4">
         <div className="relative w-72">
           <FaSearch className="absolute left-3 top-3 text-gray-400" />
           <input
@@ -309,29 +407,115 @@ export default function AppAccessPage() {
             onChange={e => setSearch(e.target.value)}
           />
         </div>
-
-        {/* Ordenação */}
-        <select
-          aria-label="Ordenar aplicativos"
-          className="px-4 py-2 rounded-full border border-gray-400 text-gray-600 bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-          value={sortMode}
-          onChange={(e) => setSortMode(e.target.value as SortMode)}
-        >
-          <option value="az">Nome (A–Z)</option>
-          <option value="za">Nome (Z–A)</option>
-          <option value="recent">Recentes</option>
-          <option value="used">Mais usados</option>
-        </select>
-
-        {/* Modo de visualização */}
-        <button
-          onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-          className="px-4 py-2 rounded-full border border-gray-400 text-gray-600 bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 transition flex items-center gap-2"
-        >
-          {viewMode === 'grid' ? <FaList /> : <FaThLarge />}
-          {viewMode === 'grid' ? 'Lista' : 'Grade'}
-        </button>
       </div>
+
+      {/* Acordeão de controles */}
+      <div className="flex flex-col items-center mb-6">
+        <button
+          onClick={() => setToolbarOpen(open => !open)}
+          className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition"
+          title={toolbarOpen ? 'Fechar opções' : 'Abrir opções'}
+          aria-expanded={toolbarOpen}
+        >
+          <FaChevronDown
+            style={{ transition: 'transform 0.2s', transform: toolbarOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+          />
+        </button>
+
+        {toolbarOpen && (
+          <div className="flex flex-wrap justify-center gap-2 mt-2">
+
+            {/* Ordenação — ícone-only */}
+            {([
+              { mode: 'az',     icon: <FaSortAlphaDown />,    label: 'Nome A–Z' },
+              { mode: 'za',     icon: <FaSortAlphaDownAlt />, label: 'Nome Z–A' },
+              { mode: 'recent', icon: <FaClock />,             label: 'Recentes' },
+              { mode: 'used',   icon: <FaFire />,              label: 'Mais usados' },
+            ] as const).map(({ mode, icon, label }) => (
+              <button
+                key={mode}
+                onClick={() => setSortMode(mode)}
+                title={label}
+                className={`w-8 h-8 flex items-center justify-center rounded-full border transition ${
+                  sortMode === mode
+                    ? 'bg-indigo-600 border-indigo-600 text-white'
+                    : 'border-gray-400 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800'
+                }`}
+              >
+                {icon}
+              </button>
+            ))}
+
+            {/* Separador visual */}
+            <span className="w-px h-8 bg-gray-300 dark:bg-gray-600" />
+
+            {/* Modo de visualização */}
+            <button
+              onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
+              title={viewMode === 'grid' ? 'Modo lista' : 'Modo grade'}
+              className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-400 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+            >
+              {viewMode === 'grid' ? <FaList /> : <FaThLarge />}
+            </button>
+
+            {/* Separador visual */}
+            <span className="w-px h-8 bg-gray-300 dark:bg-gray-600" />
+
+            {/* Exportar */}
+            <button
+              onClick={handleExportDb}
+              title="Exportar banco local"
+              className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-400 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+            >
+              <FaDownload />
+            </button>
+
+            {/* Importar */}
+            <button
+              onClick={() => importFileRef.current?.click()}
+              title="Importar banco local"
+              className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-400 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+            >
+              <FaUpload />
+            </button>
+
+            <input
+              ref={importFileRef}
+              type="file"
+              accept="application/json"
+              className="hidden"
+              onChange={handleImportDb}
+            />
+
+            {/* Separador visual */}
+            <span className="w-px h-8 bg-gray-300 dark:bg-gray-600" />
+
+            {/* Gerenciar categorias */}
+            <button
+              onClick={() => setShowCategoryCrud(true)}
+              title="Gerenciar categorias"
+              className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-400 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+            >
+              <FaTags />
+            </button>
+
+            {/* Gerenciar links */}
+            <button
+              onClick={() => setShowLinkCrud(true)}
+              title="Gerenciar links"
+              className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-400 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+            >
+              <FaLink />
+            </button>
+          </div>
+        )}
+      </div>
+
+      {syncMessage && (
+        <p className="text-center text-sm text-green-700 dark:text-green-300 mb-6">
+          {syncMessage}
+        </p>
+      )}
 
       {/* Categorias */}
       <div className="flex justify-center gap-3 mb-8 flex-wrap">
@@ -430,12 +614,34 @@ export default function AppAccessPage() {
         })}
       </div>
 
-      {/* Modal */}
+      {/* Modal de ação */}
       {selected && (
         <ActionModal
           url={selected.link}
           title={selected.title}
           onClose={() => setSelected(null)}
+        />
+      )}
+
+      {/* CRUD Categorias */}
+      {showCategoryCrud && (
+        <CategoryCrudModal
+          categories={categoriesCatalog}
+          categoryColors={categoryColors}
+          availableColors={CATEGORY_COLORS}
+          onSave={handleSaveCategories}
+          onClose={() => setShowCategoryCrud(false)}
+        />
+      )}
+
+      {/* CRUD Links */}
+      {showLinkCrud && (
+        <LinkCrudModal
+          links={links}
+          categories={categoriesCatalog}
+          categoryColors={categoryColorMap}
+          onSave={handleSaveLinks}
+          onClose={() => setShowLinkCrud(false)}
         />
       )}
 

@@ -1,0 +1,117 @@
+[
+  {
+    "name": "mylinks",
+    "title": "Mylinks RRS",
+    "link": "https://mylinks.rrs.net.br",
+    "category": "Pessoal"
+  },
+  {
+    "name": "my talks oab-iacom",
+    "title": "Palestra OAB IACom",
+    "link": "https://mytalks.rrs.net.br/oab-iacom",
+    "category": "Educacional"
+  },
+  {
+    "name": "rodneyrinaldi",
+    "title": "R2 Page",
+    "link": "https://rodneyrinaldi.com.br",
+    "category": "Pessoal"
+  },
+  {
+    "name": "rodneyrinaldiadvogado",
+    "title": "R2 Advogado",
+    "link": "https://advogado.rodneyrinaldi.com.br",
+    "category": "Jurídico"
+  },
+  {
+    "name": "rodneyrinaldiinventario",
+    "title": "R2 Inventário",
+    "link": "https://inventario.rodneyrinaldi.com.br",
+    "category": "Jurídico"
+  },
+  {
+    "name": "auxiliomaternidade",
+    "title": "R2 Auxilio Maternidade",
+    "link": "https://auxiliomaternidade.rodneyrinaldi.com.br/",
+    "category": "Jurídico"
+  },
+  {
+    "name": "rodneyrinaldidev",
+    "title": "R2 DEV",
+    "link": "https://dev.rodneyrinaldi.com.br",
+    "category": "Tecnologia"
+  },
+  {
+    "name": "servicos",
+    "title": "Serviços ADV",
+    "link": "https://servicos.adv.br",
+    "category": "Jurídico"
+  },
+  {
+    "name": "servicos status",
+    "title": "Serviços ADV Status",
+    "link": "https://servicos.adv.br/status",
+    "category": "Jurídico"
+  },
+  {
+    "name": "feepilot",
+    "title": "Fee Pilot OAB",
+    "link": "https://feepilot.servicos.adv.br",
+    "category": "Jurídico"
+  },
+  {
+    "name": "feepilot guia",
+    "title": "Fee Pilot OAB Guia",
+    "link": "https://servicos.adv.br/feepilot/guia",
+    "category": "Jurídico"
+  },
+  {
+    "name": "feepilot demo",
+    "title": "Fee Pilot OAB Demo",
+    "link": "https://servicos.adv.br/feepilot/demo",
+    "category": "Jurídico"
+  },
+  {
+    "name": "taskpilot",
+    "title": "Task Pilot OAB",
+    "link": "https://taskpilot.servicos.adv.br/",
+    "category": "Jurídico"
+  },
+  {
+    "name": "taskpilot guia",
+    "title": "Task Pilot OAB Guia",
+    "link": "https://servicos.adv.br/taskpilot/guia",
+    "category": "Jurídico"
+  },
+  {
+    "name": "taskilot demo",
+    "title": "Task Pilot OAB Demo",
+    "link": "https://servicos.adv.br/taskpilot/demo",
+    "category": "Jurídico"
+  },
+  {
+    "name": "julgados",
+    "title": "Julgagos IA",
+    "link": "https://www.julgados.ia.br",
+    "category": "Tecnologia / Jurídico"
+  },
+  {
+    "name": "eixo historico",
+    "title": "Eixo Historico",
+    "link": "https://www.eixohistorico.com.br",
+    "category": "História / Jurídico"
+  },
+  {
+    "name": "law force",
+    "title": "Law Force",
+    "link": "https://lawforce.vercel.app/",
+    "category": "Jurídico"
+  },
+  {
+    "name": "law force status",
+    "title": "Law Force Status",
+    "link": "https://lawforce.vercel.app/status",
+    "category": "Jurídico"
+  }
+
+]
