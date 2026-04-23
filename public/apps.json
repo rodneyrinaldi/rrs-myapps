@@ -106,6 +106,12 @@
     "title": "Law Force",
     "link": "https://lawforce.vercel.app/",
     "category": "Jurídico"
+  },
+  {
+    "name": "law force status",
+    "title": "Law Force Status",
+    "link": "https://lawforce.vercel.app/status",
+    "category": "Jurídico"
   }
 
 ]
