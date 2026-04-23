@@ -87,8 +87,8 @@ export function LinkCrudModal({ links, categories, categoryColors, onSave, onClo
           <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition"><FaTimes /></button>
         </div>
         {/* Formulário */}
-        <div className="flex flex-col gap-3 p-4 rounded-xl border mb-6">
-          <div className="flex gap-2">
+        <div className="flex flex-col gap-4 p-4 rounded-xl border mb-6">
+          <div className="flex gap-2 items-center">
             <input
               type="text"
               placeholder="Título *"
@@ -103,6 +103,71 @@ export function LinkCrudModal({ links, categories, categoryColors, onSave, onClo
               onChange={e => { setForm(f => ({ ...f, name: e.target.value })); setFormError(null); }}
               className="flex-1 min-w-0 px-4 py-2 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 bg-transparent text-gray-700 dark:text-gray-200 text-sm"
             />
+            <button
+              onClick={handleSubmit}
+              className="px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 transition shadow border"
+              style={{
+                backgroundColor: 'rgba(99,102,241,0.13)',
+                color: '#6366F1',
+                borderColor: '#6366F1',
+                transition: 'background 0.2s, color 0.2s',
+              }}
+              onMouseOver={e => {
+                e.currentTarget.style.backgroundColor = '#6366F1';
+                e.currentTarget.style.color = 'white';
+              }}
+              onMouseOut={e => {
+                e.currentTarget.style.backgroundColor = 'rgba(99,102,241,0.13)';
+                e.currentTarget.style.color = '#6366F1';
+              }}
+              title={editingName ? 'Salvar edição' : 'Adicionar'}
+            >
+              {editingName ? 'Salvar' : 'Adicionar'}
+            </button>
+            {editingName && (
+              <button
+                onClick={resetForm}
+                className="px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 transition shadow border"
+                style={{
+                  backgroundColor: 'rgba(209,213,219,0.13)',
+                  color: '#D1D5DB',
+                  borderColor: '#D1D5DB',
+                  transition: 'background 0.2s, color 0.2s',
+                }}
+                onMouseOver={e => {
+                  e.currentTarget.style.backgroundColor = '#D1D5DB';
+                  e.currentTarget.style.color = '#374151';
+                }}
+                onMouseOut={e => {
+                  e.currentTarget.style.backgroundColor = 'rgba(209,213,219,0.13)';
+                  e.currentTarget.style.color = '#D1D5DB';
+                }}
+                title="Cancelar edição"
+              >
+                Voltar
+              </button>
+            )}
+            <button
+              onClick={handleSave}
+              className="px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 transition shadow border"
+              style={{
+                backgroundColor: 'rgba(16,185,129,0.13)',
+                color: '#10B981',
+                borderColor: '#10B981',
+                transition: 'background 0.2s, color 0.2s',
+              }}
+              onMouseOver={e => {
+                e.currentTarget.style.backgroundColor = '#10B981';
+                e.currentTarget.style.color = 'white';
+              }}
+              onMouseOut={e => {
+                e.currentTarget.style.backgroundColor = 'rgba(16,185,129,0.13)';
+                e.currentTarget.style.color = '#10B981';
+              }}
+              title="Salvar tudo"
+            >
+              Salvar tudo
+            </button>
           </div>
           <div className="flex gap-2">
             <input
@@ -124,55 +189,101 @@ export function LinkCrudModal({ links, categories, categoryColors, onSave, onClo
             </select>
           </div>
           {formError && <p className="text-xs text-red-600 mt-1">{formError}</p>}
-          <div className="flex gap-2 mt-2">
-            <button
-              onClick={handleSubmit}
-              className="px-4 py-2 rounded-full border border-indigo-600 bg-indigo-600 text-white hover:bg-indigo-700 hover:border-indigo-700 transition text-sm font-semibold shadow-sm"
-              title={editingName ? 'Salvar edição' : 'Adicionar'}
-            >
-              {editingName ? <FaCheck /> : 'Adicionar'}
-            </button>
-            {editingName && (
-              <button
-                onClick={resetForm}
-                className="px-4 py-2 rounded-full border border-gray-400 text-gray-600 bg-white hover:bg-gray-100 transition text-sm font-semibold shadow-sm"
-                title="Cancelar edição"
-              >
-                <FaTimes />
-              </button>
-            )}
-            <button
-              onClick={handleSave}
-              className="px-4 py-2 rounded-full border border-green-600 bg-green-600 text-white hover:bg-green-700 hover:border-green-700 transition text-sm font-semibold shadow-sm ml-auto"
-              title="Salvar tudo"
-            >
-              Salvar tudo
-            </button>
-          </div>
         </div>
         {/* Lista de links */}
-        <ul className="flex-1 overflow-y-auto flex flex-col gap-2 pr-1 min-h-[180px]">
-          {list.length === 0 && (
-            <li className="text-sm text-gray-400 text-center py-4">Nenhum link cadastrado.</li>
-          )}
-          {list.map(item => (
-            <li
-              key={item.name}
-              className="flex items-center gap-2 px-4 py-3 rounded-lg border text-sm transition"
-              style={{ backgroundColor: (item.category && categoryColors[item.category]) ? `${categoryColors[item.category]}22` : undefined, borderColor: (item.category && categoryColors[item.category]) ? `${categoryColors[item.category]}66` : undefined }}
-            >
-              <div className="flex flex-col flex-1 min-w-0">
-                <span className="font-medium text-gray-800 dark:text-gray-100 truncate">{item.title}</span>
-                <span className="text-xs text-gray-500 dark:text-gray-400 truncate">{item.link}</span>
-                {item.category && (
-                  <span className="text-xs px-2 py-0.5 rounded-full whitespace-nowrap border ml-1" style={{ backgroundColor: categoryColors[item.category] || '#eee', color: categoryColors[item.category] || '#333', borderColor: (categoryColors[item.category] || '#ccc') }}>{item.category}</span>
+        <div className="flex-1 overflow-y-auto flex flex-col gap-2 pr-1 min-h-[180px] max-h-[320px] sm:max-h-[400px]">
+          <ul>
+          <ul>
+            {list.length === 0 && (
+              <li className="text-sm text-gray-400 text-center py-4">Nenhum link cadastrado.</li>
+            )}
+            {list.map(item => (
+              <li
+                key={item.name}
+                className="flex items-center gap-2 px-4 py-3 rounded-lg border text-sm transition"
+                style={{ backgroundColor: (item.category && categoryColors[item.category]) ? `${categoryColors[item.category]}22` : undefined, borderColor: (item.category && categoryColors[item.category]) ? `${categoryColors[item.category]}66` : undefined }}
+              >
+                {editingName === item.name ? (
+                  <>
+                    <input
+                      autoFocus
+                      type="text"
+                      value={form.title}
+                      onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
+                      className="flex-1 px-5 py-2 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 bg-transparent text-gray-700 dark:text-gray-200 text-sm"
+                    />
+                    <input
+                      type="url"
+                      value={form.link}
+                      onChange={e => setForm(f => ({ ...f, link: e.target.value }))}
+                      className="flex-1 px-5 py-2 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 bg-transparent text-gray-700 dark:text-gray-200 text-sm"
+                    />
+                    <select
+                      value={form.category ?? ''}
+                      onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
+                      className="flex-1 pl-3 pr-4 py-2 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 bg-transparent text-gray-700 dark:text-gray-200 text-sm"
+                    >
+                      <option value="">Sem categoria</option>
+                      {categories.map(cat => (
+                        <option key={cat} value={cat} style={{ color: categoryColors[cat] || '#111827' }}>{cat}</option>
+                      ))}
+                    </select>
+                    <a
+                      href="#"
+                      onClick={e => { e.preventDefault(); handleSubmit(); }}
+                      className="text-sm px-2 transition hover:underline focus:underline"
+                      style={{ color: 'rgba(255,255,255,0.75)' }}
+                      title="Confirmar"
+                    >
+                      confirmar
+                    </a>
+                    <a
+                      href="#"
+                      onClick={e => { e.preventDefault(); resetForm(); }}
+                      className="text-sm px-2 transition hover:underline focus:underline"
+                      style={{ color: 'rgba(255,255,255,0.55)' }}
+                      title="Cancelar"
+                    >
+                      cancelar
+                    </a>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex flex-col flex-1 min-w-0">
+                      <span className="font-medium text-gray-800 dark:text-gray-100 truncate">{item.title}</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400 truncate">{item.link}</span>
+                      {item.category && (
+                        <span className="text-xs px-2 py-0.5 rounded-full whitespace-nowrap border ml-1" style={{ backgroundColor: categoryColors[item.category] || '#eee', color: categoryColors[item.category] || '#333', borderColor: (categoryColors[item.category] || '#ccc') }}>{item.category}</span>
+                      )}
+                    </div>
+                    <span className="select-none text-gray-400 dark:text-gray-500 px-1">|</span>
+                    <a
+                      href="#"
+                      onClick={e => { e.preventDefault(); startEdit(item); }}
+                      className="hover:underline text-sm px-2"
+                      style={{ color: 'rgba(255,255,255,0.75)' }}
+                      title="Editar"
+                    >
+                      editar
+                    </a>
+                    <a
+                      href="#"
+                      onClick={e => {
+                        e.preventDefault();
+                        if (window.confirm('Tem certeza que deseja excluir este link?')) handleDelete(item.name);
+                      }}
+                      className="hover:underline text-sm px-2"
+                      style={{ color: 'rgba(255,255,255,0.55)' }}
+                      title="Excluir"
+                    >
+                      excluir
+                    </a>
+                  </>
                 )}
-              </div>
-              <button onClick={() => startEdit(item)} className="w-9 h-9 flex items-center justify-center rounded-full border border-blue-400 text-blue-600 bg-white hover:bg-blue-50 transition" title="Editar"><FaEdit size={13} /></button>
-              <button onClick={() => handleDelete(item.name)} className="w-9 h-9 flex items-center justify-center rounded-full border border-red-400 text-red-600 bg-white hover:bg-red-50 transition" title="Excluir"><FaTrash size={13} /></button>
-            </li>
-          ))}
-        </ul>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   );

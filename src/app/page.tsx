@@ -30,13 +30,6 @@ import {
   type AppLink,
   type AppsLocalDb
 } from '@/modules/apps/infrastructure/local-db';
-  // Reset banco local
-  const handleResetDb = () => {
-    if (window.confirm('Tem certeza que deseja resetar o banco local? Todos os dados locais serão apagados e restaurados do padrão na próxima visita ou importação.')) {
-      resetAppsDb();
-      setSyncMessage('Banco local resetado. Ao recarregar ou na próxima visita, o banco será recomposto.');
-    }
-  };
 import { CategoryCrudModal } from '@/modules/apps/presentation/modals/CategoryCrudModal';
 import { LinkCrudModal } from '@/modules/apps/presentation/modals/LinkCrudModal';
 
@@ -158,6 +151,14 @@ function ActionModal({
 
 export default function AppAccessPage() {
   const [links, setLinks] = useState<AppLink[]>([]);
+
+  // Reset banco local
+  const handleResetDb = () => {
+    if (window.confirm('Tem certeza que deseja resetar o banco local? Todos os dados locais serão apagados e restaurados do padrão na próxima visita ou importação.')) {
+      resetAppsDb();
+      setSyncMessage('Banco local resetado. Ao recarregar ou na próxima visita, o banco será recomposto.');
+    }
+  };
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
