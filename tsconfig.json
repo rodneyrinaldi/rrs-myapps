@@ -34,7 +34,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-  ],
+, "src/modules/apps/presentation/CategoryCrudModal.tsx.xxx"  ],
   "exclude": [
     "node_modules"
   ]
