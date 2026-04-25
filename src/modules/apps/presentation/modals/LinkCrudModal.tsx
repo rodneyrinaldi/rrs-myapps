@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { FaTrash, FaEdit, FaCheck, FaTimes } from 'react-icons/fa';
+import { FaTimes } from 'react-icons/fa';
 import type { AppLink } from '@/modules/apps/infrastructure/local-db';
 
 interface Props {
@@ -200,7 +200,7 @@ export function LinkCrudModal({ links, categories, categoryColors, onSave, onClo
               {list.length === 0 && (
                 <li className="text-sm text-gray-400 text-center py-4">Nenhum link cadastrado.</li>
               )}
-              {list.map((item, index) => {
+              {list.map((item) => {
                 const rowColor = item.category && categoryColors[item.category] ? categoryColors[item.category] : '#6366F1';
                 if (editingName === item.name) {
                   return (

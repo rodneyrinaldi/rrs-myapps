@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { FaTrash, FaEdit, FaCheck, FaTimes } from 'react-icons/fa';
+import { FaTimes } from 'react-icons/fa';
 
 interface Props {
   categories: string[];

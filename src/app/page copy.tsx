@@ -39,21 +39,16 @@ import { LinkCrudModal } from '@/modules/apps/presentation/modals/LinkCrudModal'
 
 type SortMode = 'az' | 'za' | 'recent' | 'used';
 
-interface BeforeInstallPromptEvent extends Event {
-  prompt(): Promise<void>;
-  readonly userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
-}
-
 const CATEGORY_COLORS = [
-  '#6366F1',
-  '#10B981',
-  '#F59E0B',
-  '#EC4899',
-  '#3B82F6',
-  '#8B5CF6',
-  '#14B8A6',
-  '#EF4444',
-  '#84CC16',
+  '#6366F1', // Indigo
+  '#10B981', // Emerald
+  '#F59E0B', // Amber
+  '#EC4899', // Pink
+  '#3B82F6', // Blue
+  '#8B5CF6', // Violet
+  '#14B8A6', // Teal
+  '#EF4444', // Red
+  '#84CC16', // Lime
 ];
 
 // ------------------------------
@@ -156,6 +151,14 @@ function ActionModal({
 
 export default function AppAccessPage() {
   const [links, setLinks] = useState<AppLink[]>([]);
+
+  // Reset banco local
+  const handleResetDb = () => {
+    if (window.confirm('Tem certeza que deseja resetar o banco local? Todos os dados locais serão apagados e restaurados do padrão na próxima visita ou importação.')) {
+      resetAppsDb();
+      setSyncMessage('Banco local resetado. Ao recarregar ou na próxima visita, o banco será recomposto.');
+    }
+  };
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
@@ -176,51 +179,7 @@ export default function AppAccessPage() {
   const [showCategoryCrud, setShowCategoryCrud] = useState(false);
   const [showLinkCrud, setShowLinkCrud] = useState(false);
 
-  // PWA Install
-  const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
-  const [showInstallBanner, setShowInstallBanner] = useState(false);
-  const [installText, setInstallText] = useState('Adicione à sua tela inicial');
-
   const importFileRef = useRef<HTMLInputElement | null>(null);
-
-  // ------------------------------
-  // PWA Install Prompt
-  // ------------------------------
-
-  useEffect(() => {
-    // Detecta plataforma para mensagem
-    const isMobile = /android|iphone|ipad|ipod/i.test(navigator.userAgent);
-    setInstallText(isMobile ? 'Adicione à sua tela inicial' : 'Adicione ao desktop');
-
-    const handler = (e: Event) => {
-      e.preventDefault();
-      if (sessionStorage.getItem('pwaBannerDismissed')) return;
-      setInstallPrompt(e as BeforeInstallPromptEvent);
-      setTimeout(() => setShowInstallBanner(true), 3000); // Delay de 3s
-    };
-    window.addEventListener('beforeinstallprompt', handler);
-    return () => window.removeEventListener('beforeinstallprompt', handler);
-  }, []);
-
-  const handleInstall = async () => {
-    if (!installPrompt) return;
-    await installPrompt.prompt();
-    const { outcome } = await installPrompt.userChoice;
-    if (outcome === 'accepted') {
-      setShowInstallBanner(false);
-      sessionStorage.setItem('pwaBannerDismissed', '1');
-      console.log('PWA: Usuário aceitou instalar');
-    } else {
-      console.log('PWA: Usuário recusou instalar');
-    }
-    setInstallPrompt(null);
-  };
-
-  const handleDismissBanner = () => {
-    setShowInstallBanner(false);
-    sessionStorage.setItem('pwaBannerDismissed', '1');
-    console.log('PWA: Usuário fechou o banner');
-  };
 
   // ------------------------------
   // Carregar dados
@@ -230,7 +189,7 @@ export default function AppAccessPage() {
     async function initializeLocalDb() {
       try {
         const snapshot = await loadAppsDb();
-        setLinks(snapshot.links);
+        setLinks(snapshot.links.slice(0, 3)); // Limita para apenas 3 links para teste
         setCategoriesCatalog(snapshot.categories);
         setCategoryColors(snapshot.categoryColors);
         setFavorites(snapshot.favorites);
@@ -265,33 +224,15 @@ export default function AppAccessPage() {
   }, [dbReady, links, categoriesCatalog, categoryColors, favorites, recent, usageCount]);
 
   // ------------------------------
-  // Reset banco local
-  // ------------------------------
-
-  const handleResetDb = () => {
-    if (window.confirm('Tem certeza que deseja resetar o banco local? Todos os dados locais serão apagados.')) {
-      resetAppsDb();
-      setLinks([]);
-      setCategoriesCatalog([]);
-      setCategoryColors({});
-      setFavorites([]);
-      setRecent([]);
-      setUsageCount({});
-      setActiveCategory('Todos');
-      setSearch('');
-      setSyncMessage('Banco local resetado com sucesso.');
-      setTimeout(() => setSyncMessage(null), 3000);
-    }
-  };
-
-  // ------------------------------
   // Favoritar
   // ------------------------------
 
   const toggleFavorite = (name: string) => {
-    setFavorites(prev =>
-      prev.includes(name) ? prev.filter(f => f !== name) : [...prev, name]
-    );
+    const updated = favorites.includes(name)
+      ? favorites.filter(f => f !== name)
+      : [...favorites, name];
+
+    setFavorites(updated);
   };
 
   // ------------------------------
@@ -299,13 +240,15 @@ export default function AppAccessPage() {
   // ------------------------------
 
   const registerUsage = (name: string) => {
-    setUsageCount(prev => ({ ...prev, [name]: (prev[name] || 0) + 1 }));
-    setRecent(prev => [name, ...prev.filter(r => r !== name)].slice(0, 10));
-  };
+    const updated = {
+      ...usageCount,
+      [name]: (usageCount[name] || 0) + 1
+    };
+    setUsageCount(updated);
 
-  // ------------------------------
-  // Export / Import
-  // ------------------------------
+    const updatedRecent = [name, ...recent.filter(r => r !== name)].slice(0, 10);
+    setRecent(updatedRecent);
+  };
 
   const handleExportDb = () => {
     const snapshot: AppsLocalDb = {
@@ -318,9 +261,34 @@ export default function AppAccessPage() {
       usageCount,
       updatedAt: new Date().toISOString()
     };
+
     downloadAppsDb(snapshot);
-    setSyncMessage('Exportação concluída com sucesso.');
-    setTimeout(() => setSyncMessage(null), 3000);
+    setSyncMessage('Exportacao concluida com sucesso.');
+  };
+
+  const handleSaveCategories = (payload: { categories: string[]; categoryColors: Record<string, string> }) => {
+    const { categories: updatedCategories, categoryColors: updatedColors } = payload;
+
+    const updatedLinks = links.map(l => {
+      if (l.category && !updatedCategories.includes(l.category)) {
+        return { ...l, category: undefined };
+      }
+      return l;
+    });
+
+    setLinks(updatedLinks);
+    setCategoriesCatalog(updatedCategories);
+    setCategoryColors(updatedColors);
+  };
+
+  const handleSaveLinks = (updatedLinks: AppLink[]) => {
+    setLinks(updatedLinks);
+
+    const categoriesFromLinks = updatedLinks
+      .map(link => link.category)
+      .filter((category): category is string => Boolean(category));
+
+    setCategoriesCatalog(prev => Array.from(new Set([...prev, ...categoriesFromLinks])));
   };
 
   const handleImportDb = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -340,42 +308,13 @@ export default function AppAccessPage() {
       setActiveCategory('Todos');
       setSearch('');
       setError(null);
-      setSyncMessage('Importação concluída. Banco local atualizado.');
-      setTimeout(() => setSyncMessage(null), 3000);
+      setSyncMessage('Importacao concluida. Banco local atualizado.');
     } catch (err) {
       setSyncMessage(null);
       setError(err instanceof Error ? err.message : 'Falha ao importar arquivo.');
     } finally {
       event.target.value = '';
     }
-  };
-
-  // ------------------------------
-  // CRUD handlers
-  // ------------------------------
-
-  const handleSaveCategories = (payload: { categories: string[]; categoryColors: Record<string, string> }) => {
-    const { categories: updatedCategories, categoryColors: updatedColors } = payload;
-
-    const updatedLinks = links.map(l =>
-      l.category && !updatedCategories.includes(l.category)
-        ? { ...l, category: undefined }
-        : l
-    );
-
-    setLinks(updatedLinks);
-    setCategoriesCatalog(updatedCategories);
-    setCategoryColors(updatedColors);
-  };
-
-  const handleSaveLinks = (updatedLinks: AppLink[]) => {
-    setLinks(updatedLinks);
-
-    const categoriesFromLinks = updatedLinks
-      .map(link => link.category)
-      .filter((category): category is string => Boolean(category));
-
-    setCategoriesCatalog(prev => Array.from(new Set([...prev, ...categoriesFromLinks])));
   };
 
   // ------------------------------
@@ -411,32 +350,32 @@ export default function AppAccessPage() {
     ...Array.from(new Set([...categoriesCatalog, ...links.map(app => app.category || 'Outros')]))
   ];
 
-  const filteredLinks = links
-    .filter(app => {
-      const matchesSearch =
-        app.title.toLowerCase().includes(search.toLowerCase()) ||
-        app.name.toLowerCase().includes(search.toLowerCase());
+  let filteredLinks = links.filter(app => {
+    const matchesSearch =
+      app.title.toLowerCase().includes(search.toLowerCase()) ||
+      app.name.toLowerCase().includes(search.toLowerCase());
 
-      const category = app.category || 'Outros';
+    const category = app.category || 'Outros';
 
-      const matchesCategory =
-        activeCategory === 'Todos' ||
-        (activeCategory === 'Favoritos' && favorites.includes(app.name)) ||
-        (activeCategory === 'Recentes' && recent.includes(app.name)) ||
-        category === activeCategory;
+    const matchesCategory =
+      activeCategory === 'Todos' ||
+      (activeCategory === 'Favoritos' && favorites.includes(app.name)) ||
+      (activeCategory === 'Recentes' && recent.includes(app.name)) ||
+      category === activeCategory;
 
-      return matchesSearch && matchesCategory;
-    })
-    .sort((a, b) => {
-      if (sortMode === 'az') return a.title.localeCompare(b.title);
-      if (sortMode === 'za') return b.title.localeCompare(a.title);
-      if (sortMode === 'recent')
-        return (recent.indexOf(a.name) === -1 ? 999 : recent.indexOf(a.name)) -
-               (recent.indexOf(b.name) === -1 ? 999 : recent.indexOf(b.name));
-      if (sortMode === 'used')
-        return (usageCount[b.name] || 0) - (usageCount[a.name] || 0);
-      return 0;
-    });
+    return matchesSearch && matchesCategory;
+  });
+
+  filteredLinks = filteredLinks.sort((a, b) => {
+    if (sortMode === 'az') return a.title.localeCompare(b.title);
+    if (sortMode === 'za') return b.title.localeCompare(a.title);
+    if (sortMode === 'recent')
+      return (recent.indexOf(a.name) === -1 ? 999 : recent.indexOf(a.name)) -
+             (recent.indexOf(b.name) === -1 ? 999 : recent.indexOf(b.name));
+    if (sortMode === 'used')
+      return (usageCount[b.name] || 0) - (usageCount[a.name] || 0);
+    return 0;
+  });
 
   // ------------------------------
   // Renderização
@@ -460,36 +399,6 @@ export default function AppAccessPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-8 pb-16 transition">
-
-      {/* Banner PWA Install */}
-      {showInstallBanner && (
-        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-full max-w-sm px-4 animate-fadeIn" role="dialog" aria-modal="true" aria-label="Sugestão de instalação do app">
-          <div className="flex items-center gap-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-3">
-            <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center">
-              <FaFolder className="text-white" aria-hidden="true" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Instalar atalho</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{installText}</p>
-            </div>
-            <button
-              onClick={handleDismissBanner}
-              className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 px-2 py-1 transition"
-              aria-label="Fechar banner de instalação"
-              autoFocus
-            >
-              Agora não
-            </button>
-            <button
-              onClick={handleInstall}
-              className="text-xs font-semibold bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition"
-              aria-label="Instalar aplicativo"
-            >
-              Instalar
-            </button>
-          </div>
-        </div>
-      )}
 
       <h1 className="text-center text-3xl font-extrabold text-gray-900 dark:text-gray-100 mb-6">
         rrs.net.br/myapps
@@ -524,7 +433,7 @@ export default function AppAccessPage() {
 
         {toolbarOpen && (
           <div className="flex flex-wrap justify-center gap-4 mt-2">
-            {/* Ordenação e Visualização */}
+            {/* Bloco de Ordenação e Visualização */}
             <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-indigo-50 dark:bg-indigo-900/40 border border-indigo-200 dark:border-indigo-700 shadow">
               {([
                 { mode: 'az',     icon: <FaSortAlphaDown />,    label: 'Nome A–Z' },
@@ -555,7 +464,7 @@ export default function AppAccessPage() {
               </button>
             </div>
 
-            {/* Importação/Exportação */}
+            {/* Bloco de Importação/Exportação */}
             <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-blue-50 dark:bg-blue-900/40 border border-blue-200 dark:border-blue-700 shadow">
               <button
                 onClick={handleExportDb}
@@ -580,7 +489,7 @@ export default function AppAccessPage() {
               />
             </div>
 
-            {/* Gerenciamento */}
+            {/* Bloco de Gerenciamento */}
             <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-green-50 dark:bg-green-900/40 border border-green-200 dark:border-green-700 shadow">
               <button
                 onClick={() => setShowCategoryCrud(true)}
@@ -598,7 +507,7 @@ export default function AppAccessPage() {
               </button>
             </div>
 
-            {/* Reset */}
+            {/* Bloco de Reset */}
             <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-red-50 dark:bg-red-900/40 border border-red-200 dark:border-red-700 shadow">
               <button
                 onClick={handleResetDb}
@@ -620,14 +529,14 @@ export default function AppAccessPage() {
 
       {/* Categorias */}
       <div className="flex justify-center gap-3 mb-8 flex-wrap">
-        {categories.map(cat => {
+        {categories.map((cat, index) => {
           const isSpecial = ['Todos', 'Favoritos', 'Recentes'].includes(cat);
           const color = isSpecial ? '#6B7280' : categoryColorMap[cat] || '#999';
           const isActive = activeCategory === cat;
 
           return (
             <button
-              key={cat}
+              key={index}
               onClick={() => setActiveCategory(cat)}
               className="px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 transition shadow"
               style={{
@@ -651,12 +560,12 @@ export default function AppAccessPage() {
             : 'flex flex-col gap-4 px-6'
         }
       >
-        {filteredLinks.map(item => {
+        {filteredLinks.map((item, index) => {
           const color = categoryColorMap[item.category || 'Outros'];
 
           return (
             <div
-              key={item.name}
+              key={index}
               className={
                 viewMode === 'grid'
                   ? 'flex flex-col items-center justify-center p-3 rounded-xl shadow hover:shadow-lg transition cursor-pointer'
@@ -675,20 +584,18 @@ export default function AppAccessPage() {
                 registerUsage(item.name);
               }}
             >
-              {/* Favorito — disponível em ambos os modos */}
-              <div
-                className={`text-yellow-400 text-xl ${
-                  viewMode === 'grid'
-                    ? 'absolute top-1 right-1'
-                    : 'absolute top-2 right-2'
-                }`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleFavorite(item.name);
-                }}
-              >
-                {favorites.includes(item.name) ? <FaStar /> : <FaRegStar />}
-              </div>
+              {/* Favorito */}
+              {viewMode === 'list' && (
+                <div
+                  className="absolute top-2 right-2 text-yellow-400 text-xl"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleFavorite(item.name);
+                  }}
+                >
+                  {favorites.includes(item.name) ? <FaStar /> : <FaRegStar />}
+                </div>
+              )}
 
               {/* Ícone */}
               <InitialsIcon
