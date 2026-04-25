@@ -152,11 +152,42 @@ function ActionModal({
 export default function AppAccessPage() {
   const [links, setLinks] = useState<AppLink[]>([]);
 
-  // Reset banco local
-  const handleResetDb = () => {
-    if (window.confirm('Tem certeza que deseja resetar o banco local? Todos os dados locais serão apagados e restaurados do padrão na próxima visita ou importação.')) {
+  // Reset banco local e recarrega seed imediatamente
+  const handleResetDb = async () => {
+    if (window.confirm('Tem certeza que deseja resetar o banco local? Todos os dados locais serão apagados e restaurados do padrão.')) {
       resetAppsDb();
-      setSyncMessage('Banco local resetado. Ao recarregar ou na próxima visita, o banco será recomposto.');
+      setSyncMessage('Banco local resetado. Recarregando dados padrão...');
+      setLoading(true);
+      try {
+        // Força recarregar seed default.json
+        const response = await fetch('/default.json');
+        if (!response.ok) throw new Error('Erro ao carregar default.json');
+        const json = await response.json();
+        const snapshot = {
+          version: 1,
+          links: Array.isArray(json) ? json : (json.links || []),
+          categories: [],
+          categoryColors: {},
+          favorites: [],
+          recent: [],
+          usageCount: {},
+          updatedAt: new Date().toISOString()
+        };
+        setLinks(snapshot.links);
+        setCategoriesCatalog([]);
+        setCategoryColors({});
+        setFavorites([]);
+        setRecent([]);
+        setUsageCount({});
+        setActiveCategory('Todos');
+        setSearch('');
+        setError(null);
+        setSyncMessage('Banco local resetado e recarregado do padrão.');
+      } catch (err) {
+        setError('Erro ao recarregar dados padrão.');
+      } finally {
+        setLoading(false);
+      }
     }
   };
   const [loading, setLoading] = useState(true);

@@ -96,9 +96,9 @@ export function saveAppsDb(snapshot: AppsLocalDb): void {
 }
 
 async function createSeedSnapshot(): Promise<AppsLocalDb> {
-  const response = await fetch('/apps.json');
+  const response = await fetch('/default.json');
   if (!response.ok) {
-    throw new Error(`Erro ${response.status} ao carregar apps.json.`);
+    throw new Error(`Erro ${response.status} ao carregar default.json.`);
   }
 
   const json = await response.json();
