@@ -675,20 +675,18 @@ export default function AppAccessPage() {
                 registerUsage(item.name);
               }}
             >
-              {/* Favorito — disponível em ambos os modos */}
-              <div
-                className={`text-yellow-400 text-xl ${
-                  viewMode === 'grid'
-                    ? 'absolute top-1 right-1'
-                    : 'absolute top-2 right-2'
-                }`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleFavorite(item.name);
-                }}
-              >
-                {favorites.includes(item.name) ? <FaStar /> : <FaRegStar />}
-              </div>
+              {/* Favorito — mostrar apenas no modo lista */}
+              {viewMode === 'list' && (
+                <div
+                  className={"text-yellow-400 text-xl absolute top-2 right-2"}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleFavorite(item.name);
+                  }}
+                >
+                  {favorites.includes(item.name) ? <FaStar /> : <FaRegStar />}
+                </div>
+              )}
 
               {/* Ícone */}
               <InitialsIcon
