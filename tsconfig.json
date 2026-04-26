@@ -33,8 +33,10 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
-, "src/modules/apps/presentation/CategoryCrudModal.tsx.xxx"  ],
+    ".next/types/**/*.ts",
+    "src/modules/apps/presentation/CategoryCrudModal.tsx.xxx",
+    ".next/dev/types/**/*.ts"
+, "src/modules/apps/presentation/modals/LinkCrudModal.xxx"  ],
   "exclude": [
     "node_modules"
   ]

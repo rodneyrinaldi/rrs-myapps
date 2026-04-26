@@ -36,6 +36,13 @@ interface Props {
 
 export function LinkCrudModal({ links, categories, categoryColors, onSave, onClose }: Props) {
   const [list, setList] = useState<AppLink[]>(links);
+  // Paginação
+  const PAGE_SIZE = 6;
+  const [page, setPage] = useState(0);
+  const pageCount = Math.ceil(list.length / PAGE_SIZE);
+  // Corrige página se ficar vazia
+  const safePage = Math.min(page, Math.max(0, pageCount - 1));
+  const paginatedList = list.slice(safePage * PAGE_SIZE, (safePage + 1) * PAGE_SIZE);
   const [form, setForm] = useState<typeof EMPTY_FORM>({ ...EMPTY_FORM });
   const [editingName, setEditingName] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
@@ -49,13 +56,18 @@ export function LinkCrudModal({ links, categories, categoryColors, onSave, onClo
   function handleAdd() {
     const error = validateLink(form, list);
     if (error) { setFormError(error); return; }
-    const entry: AppLink = {
+      const entry: AppLink = { 
       name: normalizeSlug(form.name),
       title: form.title.trim(),
       link: form.link.trim(),
       category: form.category?.trim() || undefined,
     };
-    setList([...list, entry]);
+    setList(prev => {
+      const newList = [...prev, entry];
+      // Vai para a última página se necessário
+      setPage(Math.floor(newList.length / PAGE_SIZE));
+      return newList;
+    });
     resetForm();
   }
 
@@ -85,7 +97,15 @@ export function LinkCrudModal({ links, categories, categoryColors, onSave, onClo
   }
 
   function handleDelete(name: string) {
-    setList(list.filter(l => l.name !== name));
+    setList(prev => {
+      const newList = prev.filter(l => l.name !== name);
+      // Se a página atual ficar vazia, volta para a última página válida
+      setPage(p => {
+        const newPageCount = Math.ceil(newList.length / PAGE_SIZE);
+        return Math.min(p, Math.max(0, newPageCount - 1));
+      });
+      return newList;
+    });
     if (editingName === name) resetForm();
   }
 
@@ -196,11 +216,11 @@ export function LinkCrudModal({ links, categories, categoryColors, onSave, onClo
             </div>
             {formError && <div className="text-red-500 text-xs mt-1">{formError}</div>}
             {/* Lista */}
+            {/* ---------------------------------------------------------------- */}
             <ul className="overflow-y-auto flex-1 flex flex-col gap-2.5 pr-1 min-h-[180px]">
-              {list.length === 0 && (
+              {list.length === 0 ? (
                 <li className="text-sm text-gray-400 text-center py-4">Nenhum link cadastrado.</li>
-              )}
-              {list.map((item) => {
+              ) : paginatedList.map((item) => {
                 const rowColor = item.category && categoryColors[item.category] ? categoryColors[item.category] : '#6366F1';
                 if (editingName === item.name) {
                   return (
@@ -260,12 +280,12 @@ export function LinkCrudModal({ links, categories, categoryColors, onSave, onClo
                           className="text-xs px-3 py-[3px] rounded-md whitespace-nowrap border ml-1 font-semibold"
                           style={{
                             backgroundColor: `${categoryColors[item.category] || '#eee'}22`,
-                            color: getContrastColor(categoryColors[item.category] || '#eee'),
+                            color: 'rgba(255,255,255,0.55)',
                             borderColor: categoryColors[item.category] || '#ccc',
                             borderWidth: 1,
                             borderStyle: 'solid',
-                            minWidth: 0,
-                            maxWidth: 120,
+                            minWidth: 160,
+                            maxWidth: 200,
                             display: 'inline-block',
                           }}
                           title={item.category}
@@ -296,25 +316,39 @@ export function LinkCrudModal({ links, categories, categoryColors, onSave, onClo
                 }
               })}
             </ul>
+            {/* Paginação centralizada abaixo da lista */}
+            {pageCount > 1 && (
+              <div className="flex justify-center items-center gap-4 mt-3">
+                <a
+                  href="#"
+                  onClick={e => { e.preventDefault(); setPage(p => Math.max(0, p - 1)); }}
+                  className="text-sm px-2 transition hover:underline focus:underline font-normal"
+                  style={{ color: page === 0 ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.75)', cursor: page === 0 ? 'not-allowed' : 'pointer' }}
+                  tabIndex={page === 0 ? -1 : 0}
+                  aria-disabled={page === 0}
+                >
+                  Anterior
+                </a>
+                <span className="text-xs text-gray-500">
+                  Página {page + 1} de {pageCount}
+                </span>
+                <a
+                  href="#"
+                  onClick={e => { e.preventDefault(); setPage(p => Math.min(pageCount - 1, p + 1)); }}
+                  className="text-sm px-2 transition hover:underline focus:underline font-normal"
+                  style={{ color: page === pageCount - 1 ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.75)', cursor: page === pageCount - 1 ? 'not-allowed' : 'pointer' }}
+                  tabIndex={page === pageCount - 1 ? -1 : 0}
+                  aria-disabled={page === pageCount - 1}
+                >
+                  Próxima
+                </a>
+              </div>
+            )}
+            {/* ---------------------------------------------------------------- */}
           </div>
         </div>
       </div>
     );
 }
 
-// Função utilitária para contraste de cor
-function getContrastColor(hex: string): string {
-  hex = hex.replace('#', '');
-  let r = 0, g = 0, b = 0;
-  if (hex.length === 3) {
-    r = parseInt(hex[0] + hex[0], 16);
-    g = parseInt(hex[1] + hex[1], 16);
-    b = parseInt(hex[2] + hex[2], 16);
-  } else if (hex.length === 6) {
-    r = parseInt(hex.substring(0, 2), 16);
-    g = parseInt(hex.substring(2, 4), 16);
-    b = parseInt(hex.substring(4, 6), 16);
-  }
-  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-  return luminance > 0.6 ? '#222' : '#fff';
-}
+

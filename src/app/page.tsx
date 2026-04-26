@@ -703,7 +703,10 @@ export default function AppAccessPage() {
                   <span className="text-lg font-semibold text-gray-800 dark:text-gray-200">
                     {item.title}
                   </span>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                  <span
+                    className="text-sm text-white font-normal"
+                    style={{ backgroundColor: color, borderRadius: 6, padding: '2px 10px', display: 'inline-block', marginTop: 2 }}
+                  >
                     {item.category || 'Outros'}
                   </span>
                 </div>
