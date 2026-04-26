@@ -106,16 +106,17 @@ export function CategoryCrudModal({ categories, categoryColors, availableColors,
           <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition"><FaTimes /></button>
         </div>
         <div className="flex flex-col gap-4">
-          <div className="flex gap-2 items-center">
+          <div className="flex flex-wrap gap-2 items-center">
             <input
               type="text"
               placeholder="Nova categoria..."
               value={newName}
               onChange={e => { setNewName(e.target.value); setFormError(null); }}
               onKeyDown={e => e.key === 'Enter' && handleAdd()}
-              className="flex-1 min-w-0 px-4 py-2 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 bg-transparent text-gray-700 dark:text-gray-200 text-sm"
+              className="w-full sm:flex-1 min-w-0 px-4 py-2 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 bg-transparent text-gray-700 dark:text-gray-200 text-sm"
               style={{ backgroundColor: colorBg(newColor), borderColor: colorBorder(newColor) }}
             />
+
             <button
               onClick={handleAdd}
               className="px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 transition shadow border"
@@ -137,6 +138,7 @@ export function CategoryCrudModal({ categories, categoryColors, availableColors,
             >
               Adicionar
             </button>
+
             <button
               onClick={handleSave}
               className="px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 transition shadow border"
@@ -158,6 +160,7 @@ export function CategoryCrudModal({ categories, categoryColors, availableColors,
             >
               Salvar
             </button>
+
             <button
               onClick={onClose}
               className="px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 transition shadow border"

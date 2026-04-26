@@ -117,32 +117,35 @@ export function LinkCrudModal({ links, categories, categoryColors, onSave, onClo
             <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition" title="Fechar"><FaTimes /></button>
           </div>
           <div className="flex flex-col gap-4">
-            <div className="flex gap-2 items-center">
+            <div className="flex flex-wrap gap-2 items-center">
               <input
                 type="text"
                 placeholder="Título *"
                 value={form.title}
                 onChange={e => { setForm(f => ({ ...f, title: e.target.value })); setFormError(null); }}
-                className="flex-1 min-w-0 px-4 py-2 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 bg-transparent text-gray-700 dark:text-gray-200 text-sm"
+                className="w-full sm:flex-1 min-w-0 px-4 py-2 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 bg-transparent text-gray-700 dark:text-gray-200 text-sm"
               />
+
               <input
                 type="text"
                 placeholder="ID (slug) *"
                 value={form.name}
                 onChange={e => { setForm(f => ({ ...f, name: e.target.value })); setFormError(null); }}
-                className="flex-1 min-w-0 px-4 py-2 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 bg-transparent text-gray-700 dark:text-gray-200 text-sm"
+                className="w-full sm:flex-1 min-w-0 px-4 py-2 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 bg-transparent text-gray-700 dark:text-gray-200 text-sm"
               />
+
               <input
                 type="url"
                 placeholder="URL *"
                 value={form.link}
                 onChange={e => { setForm(f => ({ ...f, link: e.target.value })); setFormError(null); }}
-                className="flex-1 min-w-0 px-4 py-2 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 bg-transparent text-gray-700 dark:text-gray-200 text-sm"
+                className="w-full sm:flex-1 min-w-0 px-4 py-2 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 bg-transparent text-gray-700 dark:text-gray-200 text-sm"
               />
+
               <select
                 value={form.category ?? ''}
                 onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
-                className="flex-1 pl-3 pr-4 py-2 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 bg-transparent text-gray-700 dark:text-gray-200 text-sm dark:bg-[#18181b]/80"
+                className="w-full sm:flex-1 pl-3 pr-4 py-2 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 bg-transparent text-gray-700 dark:text-gray-200 text-sm dark:bg-[#18181b]/80"
                 style={{ WebkitBackdropFilter: 'blur(4px)', backdropFilter: 'blur(4px)' }}
               >
                 <option value="" style={{ color: '#f3f4f6', backgroundColor: 'rgba(24,24,27,0.85)' }}>Sem categoria</option>
@@ -150,6 +153,7 @@ export function LinkCrudModal({ links, categories, categoryColors, onSave, onClo
                   <option key={cat} value={cat} style={{ color: categoryColors[cat] || '#f3f4f6', backgroundColor: 'rgba(24,24,27,0.85)' }}>{cat}</option>
                 ))}
               </select>
+
               <button
                 onClick={handleAdd}
                 className="px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 transition shadow border"
@@ -171,6 +175,7 @@ export function LinkCrudModal({ links, categories, categoryColors, onSave, onClo
               >
                 Adicionar
               </button>
+
               <button
                 onClick={handleSave}
                 className="px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 transition shadow border"
@@ -192,6 +197,7 @@ export function LinkCrudModal({ links, categories, categoryColors, onSave, onClo
               >
                 Salvar
               </button>
+
               <button
                 onClick={onClose}
                 className="px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 transition shadow border"
