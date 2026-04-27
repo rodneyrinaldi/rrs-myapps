@@ -35,16 +35,6 @@ export function CategoryCrudModal({ categories, categoryColors, availableColors,
   const isDuplicate = (name: string, excludeIndex?: number) =>
     list.some((c, i) => c.toLowerCase() === name.trim().toLowerCase() && i !== excludeIndex);
 
-  const handleAdd = () => {
-    const trimmed = newName.trim();
-    if (!trimmed) { setFormError('Nome obrigatório.'); return; }
-    if (isDuplicate(trimmed)) { setFormError('Categoria já existe.'); return; }
-    setList(prev => [...prev, trimmed]);
-    setColorsMap(prev => ({ ...prev, [trimmed]: newColor }));
-    setNewName('');
-    setNewColor(availableColors[0] ?? DEFAULT_COLOR);
-    setFormError(null);
-  };
 
   const handleDelete = (index: number) => {
     const categoryToRemove = list[index];
@@ -70,24 +60,45 @@ export function CategoryCrudModal({ categories, categoryColors, availableColors,
     if (!trimmed) { setFormError('Nome obrigatório.'); return; }
     if (isDuplicate(trimmed, editingIndex)) { setFormError('Categoria já existe.'); return; }
     const oldName = list[editingIndex];
-    setList(prev => prev.map((c, i) => (i === editingIndex ? trimmed : c)));
-    setColorsMap(prev => {
-      const next = { ...prev };
-      delete next[oldName];
-      next[trimmed] = editingColor;
-      return next;
-    });
+    // Atualiza lista e mapa de cores de forma sincronizada
+    const newList = list.map((c, i) => (i === editingIndex ? trimmed : c));
+    const newColorsMap = { ...colorsMap };
+    delete newColorsMap[oldName];
+    newColorsMap[trimmed] = editingColor;
+    setList(newList);
+    setColorsMap(newColorsMap);
     setEditingIndex(null);
     setEditingValue('');
     setEditingColor(availableColors[0] ?? DEFAULT_COLOR);
     setFormError(null);
+    // Persiste imediatamente após edição
+    setTimeout(() => {
+      // Remove cores de categorias que não existem mais
+      const filteredColors = Object.fromEntries(
+        Object.entries(newColorsMap).filter(([category]) => newList.includes(category))
+      );
+      onSave({ categories: newList, categoryColors: filteredColors });
+    }, 0);
   };
 
   const handleSave = () => {
+    // Consolida o estado final antes de salvar
+    let finalList = list;
+    const finalColorsMap = { ...colorsMap };
+    const trimmed = newName.trim();
+    if (trimmed) {
+      if (isDuplicate(trimmed)) {
+        setFormError('Categoria já existe.');
+        return;
+      }
+      finalList = [...list, trimmed];
+      finalColorsMap[trimmed] = newColor;
+    }
+    // Remove cores de categorias que não existem mais
     const filteredColors = Object.fromEntries(
-      Object.entries(colorsMap).filter(([category]) => list.includes(category))
+      Object.entries(finalColorsMap).filter(([category]) => finalList.includes(category))
     );
-    onSave({ categories: list, categoryColors: filteredColors });
+    onSave({ categories: finalList, categoryColors: filteredColors });
     onClose();
   };
 
@@ -112,33 +123,10 @@ export function CategoryCrudModal({ categories, categoryColors, availableColors,
               placeholder="Nova categoria..."
               value={newName}
               onChange={e => { setNewName(e.target.value); setFormError(null); }}
-              onKeyDown={e => e.key === 'Enter' && handleAdd()}
-              className="w-full sm:flex-1 min-w-0 px-4 py-2 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 bg-transparent text-gray-700 dark:text-gray-200 text-sm"
+              onKeyDown={e => { if (e.key === 'Enter') handleSave(); }}
+              className="w-full sm:flex-1 min-w-0 px-4 py-2 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 bg-transparent text-gray-800 dark:text-gray-100 text-sm"
               style={{ backgroundColor: colorBg(newColor), borderColor: colorBorder(newColor) }}
             />
-
-            <button
-              onClick={handleAdd}
-              className="px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 transition shadow border"
-              style={{
-                backgroundColor: 'rgba(99,102,241,0.13)',
-                color: '#6366F1',
-                borderColor: '#6366F1',
-                transition: 'background 0.2s, color 0.2s',
-              }}
-              onMouseOver={e => {
-                e.currentTarget.style.backgroundColor = '#6366F1';
-                e.currentTarget.style.color = 'white';
-              }}
-              onMouseOut={e => {
-                e.currentTarget.style.backgroundColor = 'rgba(99,102,241,0.13)';
-                e.currentTarget.style.color = '#6366F1';
-              }}
-              title="Adicionar"
-            >
-              Adicionar
-            </button>
-
             <button
               onClick={handleSave}
               className="px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 transition shadow border"
@@ -218,7 +206,7 @@ export function CategoryCrudModal({ categories, categoryColors, availableColors,
                         value={editingValue}
                         onChange={e => { setEditingValue(e.target.value); setFormError(null); }}
                         onKeyDown={e => e.key === 'Enter' && confirmEdit()}
-                        className="flex-1 px-5 py-2 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 bg-transparent text-gray-700 dark:text-gray-200 text-sm"
+                        className="flex-1 px-5 py-2 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 bg-transparent text-gray-800 dark:text-gray-100 text-sm"
                       />
                       <div className="flex gap-1 mt-2 sm:mt-0">
                         {availableColors.map(color => (

@@ -108,8 +108,15 @@ export function LinkCrudModal({ links, categories, categoryColors, onSave, onClo
       link: form.link.trim(),
       category: form.category?.trim() || undefined,
     };
-    setList(list.map(l => (l.name === editingName ? entry : l)));
-    resetForm();
+    const newList = list.map(l => (l.name === editingName ? entry : l));
+    setList(newList);
+    setEditingName(null);
+    setForm({ ...EMPTY_FORM });
+    setFormError(null);
+    // Persiste imediatamente após edição
+    setTimeout(() => {
+      onSave(newList);
+    }, 0);
   }
 
   function handleDelete(name: string) {

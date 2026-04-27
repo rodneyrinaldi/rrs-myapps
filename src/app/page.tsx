@@ -16,7 +16,6 @@ import {
   FaSortAlphaDown,
   FaSortAlphaDownAlt,
   FaClock,
-  FaFire,
   FaChevronDown,
   FaTags,
   FaLink
@@ -371,15 +370,33 @@ export default function AppAccessPage() {
   const handleSaveCategories = (payload: { categories: string[]; categoryColors: Record<string, string> }) => {
     const { categories: updatedCategories, categoryColors: updatedColors } = payload;
 
-    const updatedLinks = links.map(l =>
-      l.category && !updatedCategories.includes(l.category)
-        ? { ...l, category: undefined }
-        : l
-    );
+    // Atualiza os links para remover categorias que não existem mais
+    const updatedLinks = links.map(l => {
+      if (l.category && !updatedCategories.includes(l.category)) {
+        return { ...l, category: undefined };
+      }
+      return l;
+    });
 
+    // Atualiza o estado primeiro
     setLinks(updatedLinks);
     setCategoriesCatalog(updatedCategories);
     setCategoryColors(updatedColors);
+
+    // Persiste usando os valores já atualizados
+    setTimeout(() => {
+      const snapshot = {
+        version: 1 as const,
+        links: updatedLinks,
+        categories: updatedCategories,
+        categoryColors: updatedColors,
+        favorites,
+        recent,
+        usageCount,
+        updatedAt: new Date().toISOString()
+      };
+      saveAppsDb(snapshot);
+    }, 0);
   };
 
   const handleSaveLinks = (updatedLinks: AppLink[]) => {
@@ -389,7 +406,23 @@ export default function AppAccessPage() {
       .map(link => link.category)
       .filter((category): category is string => Boolean(category));
 
-    setCategoriesCatalog(prev => Array.from(new Set([...prev, ...categoriesFromLinks])));
+    setCategoriesCatalog(prev => {
+      const newCategories = Array.from(new Set([...prev, ...categoriesFromLinks]));
+
+      // Persistência imediata ao salvar links
+      const snapshot = {
+        version: 1 as const,
+        links: updatedLinks,
+        categories: newCategories,
+        categoryColors,
+        favorites,
+        recent,
+        usageCount,
+        updatedAt: new Date().toISOString()
+      };
+      saveAppsDb(snapshot);
+      return newCategories;
+    });
   };
 
   // ------------------------------
