@@ -1,4 +1,19 @@
+
 "use client";
+import { useEffect, useState as useReactState } from 'react';
+
+// Hook para detectar se está em mobile
+function useIsMobile(breakpoint = 640) {
+  const [isMobile, setIsMobile] = useReactState(() => typeof window !== 'undefined' ? window.innerWidth < breakpoint : false);
+  useEffect(() => {
+    function handleResize() {
+      setIsMobile(window.innerWidth < breakpoint);
+    }
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [breakpoint]);
+  return isMobile;
+}
 
 import { useState } from 'react';
 import { FaTimes } from 'react-icons/fa';
@@ -35,6 +50,7 @@ interface Props {
   }
 
 export function LinkCrudModal({ links, categories, categoryColors, onSave, onClose }: Props) {
+  const isMobile = useIsMobile();
   const [list, setList] = useState<AppLink[]>(links);
   // Paginação
   const PAGE_SIZE = 6;
@@ -281,7 +297,7 @@ export function LinkCrudModal({ links, categories, categoryColors, onSave, onClo
                     <li key={item.name} className="flex items-center gap-2 px-4 py-3 rounded-lg border" style={{ backgroundColor: `${rowColor}22`, borderColor: `${rowColor}66` }}>
                       <span className="flex-1 font-medium text-gray-800 dark:text-gray-100 truncate">{item.title}</span>
                       <span className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[180px]">{item.link}</span>
-                      {item.category && (
+                      {item.category && !isMobile && (
                         <span
                           className="text-xs px-3 py-[3px] rounded-md whitespace-nowrap border ml-1 font-semibold"
                           style={{
