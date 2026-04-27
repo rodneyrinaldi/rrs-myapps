@@ -37,7 +37,7 @@ import { LinkCrudModal } from '@/modules/apps/presentation/modals/LinkCrudModal'
 // Tipos e Constantes
 // ------------------------------
 
-type SortMode = 'az' | 'za' | 'recent' | 'used';
+type SortMode = 'az' | 'za' | 'recent';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -289,9 +289,23 @@ export default function AppAccessPage() {
   // ------------------------------
 
   const toggleFavorite = (name: string) => {
-    setFavorites(prev =>
-      prev.includes(name) ? prev.filter(f => f !== name) : [...prev, name]
-    );
+    setFavorites(prev => {
+      const updated = prev.includes(name)
+        ? prev.filter(f => f !== name)
+        : [...prev, name];
+      // Salva imediatamente no banco local
+      saveAppsDb({
+        version: 1,
+        links,
+        categories: categoriesCatalog,
+        categoryColors,
+        favorites: updated,
+        recent,
+        usageCount,
+        updatedAt: new Date().toISOString(),
+      });
+      return updated;
+    });
   };
 
   // ------------------------------
@@ -433,8 +447,6 @@ export default function AppAccessPage() {
       if (sortMode === 'recent')
         return (recent.indexOf(a.name) === -1 ? 999 : recent.indexOf(a.name)) -
                (recent.indexOf(b.name) === -1 ? 999 : recent.indexOf(b.name));
-      if (sortMode === 'used')
-        return (usageCount[b.name] || 0) - (usageCount[a.name] || 0);
       return 0;
     });
 
@@ -529,8 +541,6 @@ export default function AppAccessPage() {
               {([
                 { mode: 'az',     icon: <FaSortAlphaDown />,    label: 'Nome A–Z' },
                 { mode: 'za',     icon: <FaSortAlphaDownAlt />, label: 'Nome Z–A' },
-                { mode: 'recent', icon: <FaClock />,             label: 'Recentes' },
-                { mode: 'used',   icon: <FaFire />,              label: 'Mais usados' },
               ] as const).map(({ mode, icon, label }) => (
                 <button
                   key={mode}
@@ -545,6 +555,37 @@ export default function AppAccessPage() {
                   {icon}
                 </button>
               ))}
+              {/* Botão Favoritos */}
+              <button
+                onClick={() => setActiveCategory(activeCategory === 'Favoritos' ? 'Todos' : 'Favoritos')}
+                title={activeCategory === 'Favoritos' ? 'Mostrar todos' : 'Filtrar favoritos'}
+                className={`w-8 h-8 flex items-center justify-center rounded-full border transition ${
+                  activeCategory === 'Favoritos'
+                    ? 'bg-indigo-600 border-indigo-600 text-white'
+                    : 'border-indigo-400 text-indigo-600 bg-white hover:bg-indigo-100 dark:bg-indigo-950 dark:hover:bg-indigo-800'
+                }`}
+              >
+                <FaStar />
+              </button>
+              <button
+                onClick={() => {
+                  if (activeCategory === 'Recentes') {
+                    setActiveCategory('Todos');
+                    setSortMode('az');
+                  } else {
+                    setActiveCategory('Recentes');
+                    setSortMode('recent');
+                  }
+                }}
+                title={activeCategory === 'Recentes' ? 'Mostrar todos' : 'Filtrar recentes'}
+                className={`w-8 h-8 flex items-center justify-center rounded-full border transition ${
+                  activeCategory === 'Recentes'
+                    ? 'bg-indigo-600 border-indigo-600 text-white'
+                    : 'border-indigo-400 text-indigo-600 bg-white hover:bg-indigo-100 dark:bg-indigo-950 dark:hover:bg-indigo-800'
+                }`}
+              >
+                <FaClock />
+              </button>
               <span className="w-px h-8 bg-indigo-300 dark:bg-indigo-700 mx-1" />
               <button
                 onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
