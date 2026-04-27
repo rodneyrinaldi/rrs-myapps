@@ -210,44 +210,48 @@ export function CategoryCrudModal({ categories, categoryColors, availableColors,
                 style={{ backgroundColor: colorBg(rowColor), borderColor: colorBorder(rowColor) }}
               >
                 {editingIndex === index ? (
-                  <>
-                    <input
-                      autoFocus
-                      type="text"
-                      value={editingValue}
-                      onChange={e => { setEditingValue(e.target.value); setFormError(null); }}
-                      onKeyDown={e => e.key === 'Enter' && confirmEdit()}
-                      className="flex-1 px-5 py-2 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 bg-transparent text-gray-700 dark:text-gray-200 text-sm"
-                    />
-                    <div className="flex gap-1">
-                      {availableColors.map(color => (
-                        <button
-                          key={color}
-                          onClick={() => setEditingColor(color)}
-                          className={`w-5 h-5 rounded-full border ${editingColor === color ? 'border-indigo-700' : 'border-white'}`}
-                          style={{ backgroundColor: color }}
-                        />
-                      ))}
+                  <div className="w-full flex flex-col gap-1 sm:flex-row sm:items-center">
+                    <div className="flex-1 flex flex-col gap-1 sm:flex-row sm:items-center">
+                      <input
+                        autoFocus
+                        type="text"
+                        value={editingValue}
+                        onChange={e => { setEditingValue(e.target.value); setFormError(null); }}
+                        onKeyDown={e => e.key === 'Enter' && confirmEdit()}
+                        className="flex-1 px-5 py-2 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 bg-transparent text-gray-700 dark:text-gray-200 text-sm"
+                      />
+                      <div className="flex gap-1 mt-2 sm:mt-0">
+                        {availableColors.map(color => (
+                          <button
+                            key={color}
+                            onClick={() => setEditingColor(color)}
+                            className={`w-5 h-5 rounded-full border ${editingColor === color ? 'border-indigo-700' : 'border-white'}`}
+                            style={{ backgroundColor: color }}
+                          />
+                        ))}
+                      </div>
                     </div>
-                    <a
-                      href="#"
-                      onClick={e => { e.preventDefault(); confirmEdit(); }}
-                      className="text-sm px-2 transition hover:underline focus:underline"
-                      style={{ color: 'rgba(255,255,255,0.75)' }}
-                      title="Confirmar"
-                    >
-                      confirmar
-                    </a>
-                    <a
-                      href="#"
-                      onClick={e => { e.preventDefault(); resetEdit(); }}
-                      className="text-sm px-2 transition hover:underline focus:underline"
-                      style={{ color: 'rgba(255,255,255,0.55)' }}
-                      title="Cancelar"
-                    >
-                      cancelar
-                    </a>
-                  </>
+                    <div className="flex gap-1 mt-2 sm:mt-0">
+                      <a
+                        href="#"
+                        onClick={e => { e.preventDefault(); confirmEdit(); }}
+                        className="text-sm px-2 transition hover:underline focus:underline"
+                        style={{ color: 'rgba(255,255,255,0.75)' }}
+                        title="Confirmar"
+                      >
+                        confirmar
+                      </a>
+                      <a
+                        href="#"
+                        onClick={e => { e.preventDefault(); resetEdit(); }}
+                        className="text-sm px-2 transition hover:underline focus:underline"
+                        style={{ color: 'rgba(255,255,255,0.55)' }}
+                        title="Cancelar"
+                      >
+                        cancelar
+                      </a>
+                    </div>
+                  </div>
                 ) : (
                   <>
                     <span className="flex-1 font-medium text-gray-800 dark:text-gray-100 pr-6">{cat}</span>

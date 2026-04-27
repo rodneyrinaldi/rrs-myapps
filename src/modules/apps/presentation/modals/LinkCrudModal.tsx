@@ -246,7 +246,7 @@ export function LinkCrudModal({ links, categories, categoryColors, onSave, onClo
                 const rowColor = item.category && categoryColors[item.category] ? categoryColors[item.category] : '#6366F1';
                 if (editingName === item.name) {
                   return (
-                    <li key={item.name} className="flex items-center gap-2 px-4 py-3 rounded-lg border" style={{ backgroundColor: `${rowColor}22`, borderColor: `${rowColor}66` }}>
+                    <li key={item.name} className="w-full flex flex-col gap-2 px-4 py-3 rounded-lg border sm:flex-row sm:items-center" style={{ backgroundColor: `${rowColor}22`, borderColor: `${rowColor}66` }}>
                       <input
                         autoFocus
                         type="text"
@@ -265,31 +265,34 @@ export function LinkCrudModal({ links, categories, categoryColors, onSave, onClo
                       <select
                         value={form.category ?? ''}
                         onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
-                        className="flex-1 pl-3 pr-4 py-2 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 bg-transparent text-gray-700 dark:text-gray-200 text-sm"
+                        className="flex-1 pl-3 pr-4 py-2 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 bg-transparent dark:bg-transparent text-gray-700 dark:text-gray-200 text-sm"
+                        style={{ WebkitBackdropFilter: 'blur(4px)', backdropFilter: 'blur(4px)' }}
                       >
-                        <option value="">Sem categoria</option>
+                        <option value="" style={{ color: '#f3f4f6', backgroundColor: 'rgba(24,24,27,0.85)' }}>Sem categoria</option>
                         {categories.map(cat => (
-                          <option key={cat} value={cat} style={{ color: categoryColors[cat] || '#111827' }}>{cat}</option>
+                          <option key={cat} value={cat} style={{ color: categoryColors[cat] || '#f3f4f6', backgroundColor: 'rgba(24,24,27,0.85)' }}>{cat}</option>
                         ))}
                       </select>
-                      <a
-                        href="#"
-                        onClick={e => { e.preventDefault(); confirmEdit(); }}
-                        className="text-sm px-2 transition hover:underline focus:underline font-normal"
-                        style={{ color: 'rgba(255,255,255,0.75)' }}
-                        title="Salvar"
-                      >
-                        salvar
-                      </a>
-                      <a
-                        href="#"
-                        onClick={e => { e.preventDefault(); resetForm(); }}
-                        className="text-sm px-2 transition hover:underline focus:underline font-normal"
-                        style={{ color: 'rgba(255,255,255,0.55)' }}
-                        title="Cancelar"
-                      >
-                        cancelar
-                      </a>
+                      <div className="flex gap-1 mt-2 sm:mt-0">
+                        <a
+                          href="#"
+                          onClick={e => { e.preventDefault(); confirmEdit(); }}
+                          className="text-sm px-2 transition hover:underline focus:underline font-normal"
+                          style={{ color: 'rgba(255,255,255,0.75)' }}
+                          title="Salvar"
+                        >
+                          salvar
+                        </a>
+                        <a
+                          href="#"
+                          onClick={e => { e.preventDefault(); resetForm(); }}
+                          className="text-sm px-2 transition hover:underline focus:underline font-normal"
+                          style={{ color: 'rgba(255,255,255,0.55)' }}
+                          title="Cancelar"
+                        >
+                          cancelar
+                        </a>
+                      </div>
                     </li>
                   );
                 } else {
