@@ -52,6 +52,11 @@ interface Props {
 export function LinkCrudModal({ links, categories, categoryColors, onSave, onClose }: Props) {
   const isMobile = useIsMobile();
   const [list, setList] = useState<AppLink[]>(links);
+
+  // Sincroniza o estado local com as props sempre que links mudar
+  useEffect(() => {
+    setList(links);
+  }, [links]);
   // Paginação
   const PAGE_SIZE = 6;
   const [page, setPage] = useState(0);
@@ -78,17 +83,40 @@ export function LinkCrudModal({ links, categories, categoryColors, onSave, onClo
       link: form.link.trim(),
       category: form.category?.trim() || undefined,
     };
-    setList(prev => {
-      const newList = [...prev, entry];
-      // Vai para a última página se necessário
-      setPage(Math.floor(newList.length / PAGE_SIZE));
-      return newList;
-    });
-    resetForm();
+      setList(prev => {
+        const newList = [...prev, entry];
+        // Vai para a última página se necessário
+        setPage(Math.floor(newList.length / PAGE_SIZE));
+        // Persiste imediatamente após adicionar
+        setTimeout(() => {
+          onSave(newList);
+        }, 0);
+        return newList;
+      });
+      resetForm();
   }
 
   function handleSave() {
-    onSave(list);
+    let finalList = list;
+    const trimmedName = form.name.trim();
+    const trimmedTitle = form.title.trim();
+    const trimmedLink = form.link.trim();
+    // Só adiciona se o formulário estiver preenchido
+    if (trimmedName || trimmedTitle || trimmedLink) {
+      const error = validateLink(form, list);
+      if (error) {
+        setFormError(error);
+        return;
+      }
+      const entry: AppLink = {
+        name: normalizeSlug(form.name),
+        title: trimmedTitle,
+        link: trimmedLink,
+        category: form.category?.trim() || undefined,
+      };
+      finalList = [...list, entry];
+    }
+    onSave(finalList);
     onClose();
   }
 
